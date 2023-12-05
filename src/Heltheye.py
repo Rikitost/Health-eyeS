@@ -80,9 +80,9 @@ def distance(sampleLen, fwSample, ewSample,fw,ew):
 # ---------------------------------------------------------------------------------------------------------
 
 # カスケード分類器のパスを各変数に代入
-fase_cascade_path = './data/haarcascades/haarcascade_frontalface_default.xml'
-eye_cascade_path = './data/haarcascades/haarcascade_eye.xml'
-
+# pythonの実行
+fase_cascade_path = 'data\haarcascades\haarcascade_frontalface_default.xml'
+eye_cascade_path = 'data\haarcascades\haarcascade_eye.xml'
 # カスケード分類器の読み込み
 face_cascade = cv2.CascadeClassifier(fase_cascade_path)
 eye_cascade = cv2.CascadeClassifier(eye_cascade_path)
