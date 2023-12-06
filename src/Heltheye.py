@@ -5,7 +5,11 @@
 # キー入力「Esc」で終了
 # 画面サイズ1280,720で計測
 
+# 追加 importでファイルtimesetを追加
+# 148
+# 194から203ぐらい
 
+# import
 import cv2
 import sys
 import statistics   # 最頻値
@@ -17,8 +21,6 @@ import timeset
 
 
 # 入力された値(fw,ew)から距離を求める関数--------------------------------------------------------------------
-
-
 def distance(sampleLen, fwSample, ewSample, fw, ew):
     valuesAbs = []      # 入力された値xと事前に計測された値との絶対値を格納
     cnt = 0             # カウントの役割をする変数
@@ -97,9 +99,9 @@ def distance(sampleLen, fwSample, ewSample, fw, ew):
             # どれだけ画面から離れているか
             ans = sampleLen[cnt] + data4
     return ans
+
+
 # ---------------------------------------------------------------------------------------------------------
-
-
 # カスケード分類器のパスを各変数に代入
 # pythonの実行
 fase_cascade_path = 'data\haarcascades\haarcascade_frontalface_default.xml'
