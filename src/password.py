@@ -8,11 +8,13 @@ from tkinter import messagebox
 
 
 def setpassbutton_push():
-    # パスワードの判定
-    if int(pass_text.get()) > 0:
+    # パスワードの判定(一致不一致)
+    if pass_text.get() > 0:
         # フォームを閉じる
         pass_form.destroy()
     else:
+        # メッセージ
+        # messagebox.showwarning("注意", "遠いです")
         return
 
 

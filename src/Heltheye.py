@@ -5,7 +5,7 @@
 # キー入力「Esc」で終了
 # 画面サイズ1280,720で計測
 
-# 追加 importでファイルtimesetを追加
+# 追加行大体 importでファイルtimesetを追加
 # 148
 # 194から203ぐらい
 
@@ -192,11 +192,9 @@ while True:
                           statistics.mode(fwcount), statistics.mode(ewcount))
         if disAns == -1:
             print('10cm以下です!近すぎます!!\n')
-        elif disAns == -2:
-            print('70cm以上離れています!!\n')
             # 通知の設定
-            notification_title = '遠い'
-            notification_message = '通知のメッセージ'
+            notification_title = 'ちかい'
+            notification_message = 'ちかづきすぎですはなれて！'
             notification_timeout = 10  # 表示時間（秒）
 
             # 通知を   送る
@@ -205,11 +203,25 @@ while True:
                 message=notification_message,
                 timeout=notification_timeout
             )
+        elif disAns == -2:
+            print('70cm以上離れています!!\n')
         else:
             if disAns < 30:
                 print('顔が近いので少し離れてください')
+                # 通知の設定
+                notification_title = 'ちかい'
+                notification_message = 'ちかづきすぎですはなれて！'
+                notification_timeout = 10  # 表示時間（秒）
+
+                # 通知を   送る
+                notification.notify(
+                    title=notification_title,
+                    message=notification_message,
+                    timeout=notification_timeout
+                )
             print('%.2fcm\n' % disAns)    # 小数第２位まで出力
 
+# カウントのリセット
         fwcount = []
         ewcount = []
 
@@ -250,14 +262,6 @@ while True:
                     color=(0, 0, 255),
                     thickness=2,
                     lineType=cv2.LINE_AA)
-
-        # メッセージ
-        # messagebox.showwarning("注意", "遠いです")
-        # # カメラのリソースを開放する
-        # cap.release()
-        # # OpenCVのウィンドウをすべて閉じる
-        # cv2.destroyAllWindows()
-
     else:
         if disAns < 30 and disAns != 0:     # 30cm未満の場合、警告を出す
             cv2.putText(frame,
