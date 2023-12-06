@@ -147,7 +147,7 @@ if cap.isOpened() is False:
 
 
 # 時間の設定
-timeset.form1_task()
+timeset.timeset_task()
 
 
 # 無限ループで読み取った映像に変化を加える（1フレームごとに区切って変化）

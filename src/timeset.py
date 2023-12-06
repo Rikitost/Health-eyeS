@@ -1,19 +1,26 @@
+# tkinterのimport
 import tkinter as tk
-
 # 時間表示
 
 # ボタンを押したときの判定
 
 
 def setbutton_push():
-    entered_text = int(timeset_text.get())
-    if entered_text > 0:
+    if int(timeset_text.get()) > 0:
         time_form.destroy()
     else:
         return
 
+# 数値のみ
 
-def form1_task():
+
+def on_validate(d, i, P, s, S, v, V, W):
+    # Pが数字の場合はTrue、それ以外はFalse
+    return P.isdigit()
+
+
+# フォームの生成
+def timeset_task():
     # グローバル変数で宣言
     # 時間入力のform
     global time_form
@@ -31,8 +38,11 @@ def form1_task():
     timeset_label = tk.Label(text='時間を入力してください(分)')
     timeset_label.place(x=30, y=50)
 
+    validation = time_form.register(on_validate)
+
     # 入力のテキストボックス
-    timeset_text = tk.Entry(width=30)
+    timeset_text = tk.Entry(time_form, validate="key", validatecommand=(
+        validation, '%d', '%i', '%P', '%s', '%S', '%v', '%V', '%W'))
     timeset_text.place(x=30, y=70)
 
     # 入力決定のボタン
