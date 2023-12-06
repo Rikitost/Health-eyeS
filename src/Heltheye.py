@@ -9,12 +9,12 @@
 import cv2
 import sys
 import statistics   # 最頻値
-# 画面ぼかし
-import numpy as np
-import pygetwindow as gw
-import pyautogui
-from tkinter import messagebox
+import tkinter as tk
+import threading
+import time
 from plyer import notification
+import timeset
+
 
 # 入力された値(fw,ew)から距離を求める関数--------------------------------------------------------------------
 
@@ -144,6 +144,11 @@ cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)  # カメラ画像の縦幅を720に設�
 if cap.isOpened() is False:
     print("カメラが起動していないため終了しました")
     sys.exit()
+
+
+# 時間の設定
+timeset.form1_task()
+
 
 # 無限ループで読み取った映像に変化を加える（1フレームごとに区切って変化）
 while True:
