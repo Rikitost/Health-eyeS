@@ -5,7 +5,7 @@ import tkinter as tk
 # ボタンを押したときの判定
 
 
-def setbutton_push():
+def settimebutton_push():
     # 数字の判定
     if int(timeset_text.get()) > 0:
         # フォームを閉じる
@@ -53,7 +53,7 @@ def timeset_task():
     timeset_button = tk.Button(
         time_form,
         text='設定',
-        command=setbutton_push
+        command=settimebutton_push
     ).place(x=100, y=150)
 
     # フォームのループ
