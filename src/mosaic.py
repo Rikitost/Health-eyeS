@@ -1,3 +1,4 @@
+# import
 import cv2
 import numpy as np
 import win32gui
@@ -6,15 +7,16 @@ import win32ui
 import win32api
 import ctypes
 
-# ぼかしのカーネルサイズ
-blur_kernel_size = (101, 101)
 
-# キャプチャする領域のサイズ（画面全体）
-screen_width = win32api.GetSystemMetrics(win32con.SM_CXSCREEN) * 2
-screen_height = win32api.GetSystemMetrics(win32con.SM_CYSCREEN) * 2
+def mosaic():
+    # ぼかしのカーネルサイズ
+    blur_kernel_size = (101, 101)
 
-# キャプチャループ
-while True:
+    # キャプチャする領域のサイズ（画面全体）
+    # 私のPCでは大きさが小さかったので全体的に2倍にしてます
+    screen_width = win32api.GetSystemMetrics(win32con.SM_CXSCREEN) * 2
+    screen_height = win32api.GetSystemMetrics(win32con.SM_CYSCREEN) * 2
+
     # ウィンドウスクリーンのキャプチャ
     hwnd = win32gui.GetDesktopWindow()
     hwnd_dc = win32gui.GetWindowDC(hwnd)
@@ -71,6 +73,7 @@ while True:
     bmi.bmiHeader = bmi_header
 
     hdc = win32gui.GetDC(0)
+    # ぼかしを表示する範囲
     ctypes.windll.gdi32.SetDIBitsToDevice(
         hdc, 0, 0, screen_width, screen_height,
         0, 0, 0, screen_height, img_data, ctypes.byref(
@@ -78,14 +81,9 @@ while True:
     )
     win32gui.ReleaseDC(0, hdc)
 
-    # キー入力で終了
-    key = cv2.waitKey(1)
-    if key == 27:  # ESCキーで終了
-        break
+    # ウィンドウを閉じる
+    cv2.destroyAllWindows()
 
-# ウィンドウを閉じる
-cv2.destroyAllWindows()
-
-# リソースの解放
-win32gui.ReleaseDC(hwnd, hwnd_dc)
-win32gui.DeleteObject(save_bitmap.GetHandle())
+    # リソースの解放
+    win32gui.ReleaseDC(hwnd, hwnd_dc)
+    win32gui.DeleteObject(save_bitmap.GetHandle())

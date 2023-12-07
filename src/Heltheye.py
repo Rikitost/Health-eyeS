@@ -18,9 +18,18 @@ import threading
 import time
 from plyer import notification
 import timeset
-
+# ぼかしの処理
+import numpy as np
+import win32gui
+import win32con
+import win32ui
+import win32api
+import ctypes
+import mosaic
 
 # 入力された値(fw,ew)から距離を求める関数--------------------------------------------------------------------
+
+
 def distance(sampleLen, fwSample, ewSample, fw, ew):
     valuesAbs = []      # 入力された値xと事前に計測された値との絶対値を格納
     cnt = 0             # カウントの役割をする変数
@@ -142,6 +151,19 @@ cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)  # カメラ画像の縦幅を720に設�
 # print cap.get(cv2.CAP_PROP_FRAME_WIDTH)
 # print cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
 
+
+# -----------------------------------------------------------
+
+# ぼかしのカーネルサイズ
+blur_kernel_size = (101, 101)
+
+# キャプチャする領域のサイズ（画面全体）
+# 私のPCでは大きさが小さかったので全体的に2倍にしてます
+screen_width = win32api.GetSystemMetrics(win32con.SM_CXSCREEN) * 2
+screen_height = win32api.GetSystemMetrics(win32con.SM_CYSCREEN) * 2
+
+
+# -----------------------------------------------------------
 # もしカメラが起動していなかったら終了する
 if cap.isOpened() is False:
     print("カメラが起動していないため終了しました")
@@ -192,17 +214,17 @@ while True:
                           statistics.mode(fwcount), statistics.mode(ewcount))
         if disAns == -1:
             print('10cm以下です!近すぎます!!\n')
-            # 通知の設定
-            notification_title = 'ちかい'
-            notification_message = 'ちかづきすぎですはなれて！'
-            notification_timeout = 10  # 表示時間（秒）
+            # # 通知の設定
+            # notification_title = 'ちかい'
+            # notification_message = 'ちかづきすぎですはなれて！'
+            # notification_timeout = 10  # 表示時間（秒）
 
-            # 通知を   送る
-            notification.notify(
-                title=notification_title,
-                message=notification_message,
-                timeout=notification_timeout
-            )
+            # # 通知を   送る
+            # notification.notify(
+            #     title=notification_title,
+            #     message=notification_message,
+            #     timeout=notification_timeout
+            # )
         elif disAns == -2:
             print('70cm以上離れています!!\n')
         else:
@@ -239,7 +261,7 @@ while True:
                     thickness=2,        # 文字の太さ
                     lineType=cv2.LINE_AA)    # アルゴリズムの種類（文字を滑らかにするかどうか,デフォルトはcv2.LINE_8）
     elif disAns == -2:
-
+        mosaic.mosaic()
         # # 無限モザイク
         # screen = pyautogui.size()
         # screen_width, screen_height = screen.width, screen.height
@@ -294,7 +316,7 @@ while True:
     # 結果を表示
     # cv2.imshow('gray', gray)
     # 画像の表示
-    cv2.imshow('YourFace', frame)
+    # cv2.imshow('YourFace', frame)
 
     # キー入力を10ms待つ
     # 「Esc」を押すと無限ループから抜けて終了処理に移る
