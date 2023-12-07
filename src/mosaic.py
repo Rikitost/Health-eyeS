@@ -10,9 +10,8 @@ import ctypes
 blur_kernel_size = (101, 101)
 
 # キャプチャする領域のサイズ（画面全体）
-screen_width = win32api.GetSystemMetrics(win32con.SM_CXSCREEN)
-screen_height = win32api.GetSystemMetrics(win32con.SM_CYSCREEN)
-
+screen_width = win32api.GetSystemMetrics(win32con.SM_CXSCREEN) * 2
+screen_height = win32api.GetSystemMetrics(win32con.SM_CYSCREEN) * 2
 
 # キャプチャループ
 while True:
