@@ -217,25 +217,10 @@ while True:
             mosaic.mosaic()
             # コマンドライン
             print('10cm以下です!近すぎます!!\n')
-            # # 通知の設定
-            # notification_title = 'ちかい'
-            # notification_message = 'ちかづきすぎですはなれて！'
-            # notification_timeout = 10  # 表示時間（秒）
-
-            # # 通知を   送る
-            # notification.notify(
-            #     title=notification_title,
-            #     message=notification_message,
-            #     timeout=notification_timeout
-            # )
         elif disAns == -2:
             print('70cm以上離れています!!\n')
         else:
             if disAns < 30:
-                # ぼかしの処理
-                mosaic.mosaic()
-                # コマンドライン
-                print('顔が近いので少し離れてください')
                 # 通知の設定
                 notification_title = 'ちかい'
                 notification_message = 'ちかづきすぎですはなれて！'
@@ -247,6 +232,10 @@ while True:
                     message=notification_message,
                     timeout=notification_timeout
                 )
+                # ぼかしの処理
+                mosaic.mosaic()
+                # コマンドライン
+                print('顔が近いので少し離れてください')
             print('%.2fcm\n' % disAns)    # 小数第２位まで出力
 
 # カウントのリセット
