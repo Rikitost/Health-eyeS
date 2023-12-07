@@ -7,6 +7,8 @@ import win32ui
 import win32api
 import ctypes
 
+# ぼかしの関数
+
 
 def mosaic():
     # ぼかしのカーネルサイズ
@@ -18,13 +20,18 @@ def mosaic():
     screen_height = win32api.GetSystemMetrics(win32con.SM_CYSCREEN) * 2
 
     # ウィンドウスクリーンのキャプチャ
+    # ウィンドウハンドルの取得
     hwnd = win32gui.GetDesktopWindow()
+    # デバイスコンテキストを取得
     hwnd_dc = win32gui.GetWindowDC(hwnd)
     mfc_dc = win32ui.CreateDCFromHandle(hwnd_dc)
+    # Bitmapの作成
     save_dc = mfc_dc.CreateCompatibleDC()
     save_bitmap = win32ui.CreateBitmap()
+    # サイズの指定
     save_bitmap.CreateCompatibleBitmap(mfc_dc, screen_width, screen_height)
     save_dc.SelectObject(save_bitmap)
+    # デスクトップの画面自体をコピー
     save_dc.BitBlt((0, 0), (screen_width, screen_height),
                    mfc_dc, (0, 0), win32con.SRCCOPY)
 
