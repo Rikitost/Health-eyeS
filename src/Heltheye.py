@@ -179,7 +179,7 @@ if cap.isOpened() is False:
     sys.exit()
 
 
-# 時間の設定
+# 時間の設定のフォーム
 timeset.timeset_task()
 
 
@@ -222,13 +222,9 @@ while True:
         disAns = distance(sampleLen, fwSample, ewSample,
                           statistics.mode(fwcount), statistics.mode(ewcount))
         if disAns == -1:
-            # ぼかしの処理
-            mosaic.mosaic()
             # コマンドライン
             print('10cm以下です!近すぎます!!\n')
         elif disAns == -2:
-            # 画面のリフレッシュ
-            refreshframe()
             print('70cm以上離れています!!\n')
         else:
             if disAns < 30:
@@ -243,8 +239,6 @@ while True:
                     message=notification_message,
                     timeout=notification_timeout
                 )
-                # ぼかしの処理
-                mosaic.mosaic()
                 # コマンドライン
                 print('顔が近いので少し離れてください')
             print('%.2fcm\n' % disAns)    # 小数第２位まで出力
@@ -255,6 +249,8 @@ while True:
 
     # 画面に距離を表示
     if disAns == -1:
+        # ぼかしの処理
+        mosaic.mosaic()
         # imshowで表示させている
         cv2.putText(frame,
                     # テキスト(英数字のみ)
@@ -280,6 +276,8 @@ while True:
                     lineType=cv2.LINE_AA)
     else:
         if disAns < 30 and disAns != 0:     # 30cm未満の場合、警告を出す
+            # ぼかしの処理
+            mosaic.mosaic()
             cv2.putText(frame,
                         text="Less than 30 cm! Please stay away!!",
                         org=(370, 60),
