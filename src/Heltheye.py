@@ -213,6 +213,9 @@ while True:
         disAns = distance(sampleLen, fwSample, ewSample,
                           statistics.mode(fwcount), statistics.mode(ewcount))
         if disAns == -1:
+            # ぼかしの処理
+            mosaic.mosaic()
+            # コマンドライン
             print('10cm以下です!近すぎます!!\n')
             # # 通知の設定
             # notification_title = 'ちかい'
@@ -229,13 +232,16 @@ while True:
             print('70cm以上離れています!!\n')
         else:
             if disAns < 30:
+                # ぼかしの処理
+                mosaic.mosaic()
+                # コマンドライン
                 print('顔が近いので少し離れてください')
                 # 通知の設定
                 notification_title = 'ちかい'
                 notification_message = 'ちかづきすぎですはなれて！'
                 notification_timeout = 10  # 表示時間（秒）
 
-                # 通知を   送る
+                # 通知を送る
                 notification.notify(
                     title=notification_title,
                     message=notification_message,
@@ -249,6 +255,7 @@ while True:
 
     # 画面に距離を表示
     if disAns == -1:
+        # imshowで表示させている
         cv2.putText(frame,
                     # テキスト(英数字のみ)
                     text="Less than 10 cm! Please stay away!!",
@@ -261,20 +268,7 @@ while True:
                     thickness=2,        # 文字の太さ
                     lineType=cv2.LINE_AA)    # アルゴリズムの種類（文字を滑らかにするかどうか,デフォルトはcv2.LINE_8）
     elif disAns == -2:
-        mosaic.mosaic()
-        # # 無限モザイク
-        # screen = pyautogui.size()
-        # screen_width, screen_height = screen.width, screen.height
 
-        # screenshot = pyautogui.screenshot()
-        # screenshot = cv2.cvtColor(np.array(screenshot), cv2.COLOR_RGB2BGR)
-
-        # # 画面全体にモザイク処理を適用
-        # mosaic_size = (screen_width // 50, screen_height // 50)  # モザイクサイズ
-        # screenshot_mosaic = cv2.resize(
-        #     screenshot, mosaic_size, interpolation=cv2.INTER_NEAREST)
-
-        # frame = mosaic_size
         # 元データ
         cv2.putText(frame,
                     text="Over 70 cm! Please come closer!!",

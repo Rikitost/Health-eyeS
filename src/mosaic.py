@@ -84,6 +84,6 @@ def mosaic():
     # ウィンドウを閉じる
     cv2.destroyAllWindows()
 
-    # リソースの解放
+    # GUIリソースの解放
     win32gui.ReleaseDC(hwnd, hwnd_dc)
     win32gui.DeleteObject(save_bitmap.GetHandle())
