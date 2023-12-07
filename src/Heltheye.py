@@ -27,6 +27,15 @@ import win32api
 import ctypes
 import mosaic
 
+
+# 画面リフレッシュの関数
+def refreshframe():
+    hwnd = win32gui.GetDesktopWindow()
+
+    # ウィンドウを再描画
+    win32gui.UpdateWindow(hwnd)
+
+
 # 入力された値(fw,ew)から距離を求める関数--------------------------------------------------------------------
 
 
@@ -218,6 +227,8 @@ while True:
             # コマンドライン
             print('10cm以下です!近すぎます!!\n')
         elif disAns == -2:
+            # 画面のリフレッシュ
+            refreshframe()
             print('70cm以上離れています!!\n')
         else:
             if disAns < 30:
