@@ -264,7 +264,6 @@ while True:
                     thickness=2,        # 文字の太さ
                     lineType=cv2.LINE_AA)    # アルゴリズムの種類（文字を滑らかにするかどうか,デフォルトはcv2.LINE_8）
     elif disAns == -2:
-
         # 元データ
         cv2.putText(frame,
                     text="Over 70 cm! Please come closer!!",
