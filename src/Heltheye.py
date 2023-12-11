@@ -26,15 +26,16 @@ import win32ui
 import win32api
 import ctypes
 import mosaic
+import refreshfream
 
 
-# 画面リフレッシュの関数
-def refreshframe():
-    hwnd = win32gui.GetDesktopWindow()
+# デスクトップをリフレッシュするための関数
+def refresh_desktop():
+    # ユーザ32.dllのハンドルを取得
+    user32 = ctypes.windll.user32
 
-    # ウィンドウを再描画
-    win32gui.UpdateWindow(hwnd)
-
+    # メッセージを送信してデスクトップをリフレッシュ
+    user32.SendMessageW(0xFFFF, 0x0112, 0xF5, 0)
 
 # 入力された値(fw,ew)から距離を求める関数--------------------------------------------------------------------
 
@@ -162,17 +163,6 @@ cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)  # カメラ画像の縦幅を720に設�
 
 
 # -----------------------------------------------------------
-
-# ぼかしのカーネルサイズ
-blur_kernel_size = (101, 101)
-
-# キャプチャする領域のサイズ（画面全体）
-# 私のPCでは大きさが小さかったので全体的に2倍にしてます
-screen_width = win32api.GetSystemMetrics(win32con.SM_CXSCREEN) * 2
-screen_height = win32api.GetSystemMetrics(win32con.SM_CYSCREEN) * 2
-
-
-# -----------------------------------------------------------
 # もしカメラが起動していなかったら終了する
 if cap.isOpened() is False:
     print("カメラが起動していないため終了しました")
@@ -264,6 +254,7 @@ while True:
                     thickness=2,        # 文字の太さ
                     lineType=cv2.LINE_AA)    # アルゴリズムの種類（文字を滑らかにするかどうか,デフォルトはcv2.LINE_8）
     elif disAns == -2:
+        refreshfream.refresh_window()
         # 元データ
         cv2.putText(frame,
                     text="Over 70 cm! Please come closer!!",

@@ -191,7 +191,7 @@ def mosaic():
     win32gui.ReleaseDC(0, hdc)
 
     # ウィンドウを閉じる
-    # cv2.destroyAllWindows()
+    cv2.destroyAllWindows()
 
     # GUIリソースの解放
     win32gui.ReleaseDC(hwnd, hwnd_dc)
