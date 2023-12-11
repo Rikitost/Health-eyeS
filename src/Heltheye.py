@@ -348,6 +348,8 @@ while True:
                 # )
                 # コマンドライン
                 print('顔が近いので少し離れてください')
+            elif disAns >= 30:
+                unmosaic()
             print('%.2fcm\n' % disAns)    # 小数第２位まで出力
 
 # カウントのリセット
