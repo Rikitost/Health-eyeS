@@ -113,6 +113,9 @@ import ctypes
 
 
 def mosaic():
+    # オリジナルのデスクトップ画像
+    global original_desktop_image
+    original_desktop_image = None
     # ぼかしのカーネルサイズ
     blur_kernel_size = (101, 101)
 
@@ -196,3 +199,6 @@ def mosaic():
     # GUIリソースの解放
     win32gui.ReleaseDC(hwnd, hwnd_dc)
     win32gui.DeleteObject(save_bitmap.GetHandle())
+
+    # オリジナルのデスクトップ画像を保存
+    original_desktop_image = image_np.copy()

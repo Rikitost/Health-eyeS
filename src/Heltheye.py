@@ -29,14 +29,6 @@ import mosaic
 import refreshfream
 
 
-# デスクトップをリフレッシュするための関数
-def refresh_desktop():
-    # ユーザ32.dllのハンドルを取得
-    user32 = ctypes.windll.user32
-
-    # メッセージを送信してデスクトップをリフレッシュ
-    user32.SendMessageW(0xFFFF, 0x0112, 0xF5, 0)
-
 # 入力された値(fw,ew)から距離を求める関数--------------------------------------------------------------------
 
 

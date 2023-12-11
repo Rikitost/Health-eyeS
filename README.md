@@ -4,3 +4,4 @@ opencv
 plyer
 pywin3
 pynput
+keyboard

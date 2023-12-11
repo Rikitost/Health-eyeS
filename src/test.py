@@ -1,3 +1,5 @@
+# 案1--------------------------------------------------------------
+
 import cv2
 import numpy as np
 import win32gui
@@ -6,24 +8,21 @@ import win32ui
 import win32api
 import ctypes
 import threading
-from pynput import mouse
-from PIL import ImageGrab
+import keyboard
 
-# オリジナルのデスクトップ画像
+# グローバル変数: オリジナルのデスクトップ画像
 original_desktop_image = None
+screen_width = win32api.GetSystemMetrics(win32con.SM_CXSCREEN) * 2
+screen_height = win32api.GetSystemMetrics(win32con.SM_CYSCREEN) * 2
 
-# ぼかしの関数
+# 初回のぼかし処理フラグ
+first_mosaic = True
+
+# ぼかしをかける関数
 
 
 def mosaic():
-    global original_desktop_image
-
-    # ぼかしのカーネルサイズ
-    blur_kernel_size = (101, 101)
-
-    # キャプチャする領域のサイズ（画面全体）
-    screen_width = win32api.GetSystemMetrics(win32con.SM_CXSCREEN) * 2
-    screen_height = win32api.GetSystemMetrics(win32con.SM_CYSCREEN) * 2
+    global original_desktop_image, first_mosaic
 
     # ウィンドウスクリーンのキャプチャ
     hwnd = win32gui.GetDesktopWindow()
@@ -42,12 +41,37 @@ def mosaic():
     image_np = np.frombuffer(bmp_data, dtype=np.uint8).reshape(
         screen_height, screen_width, 4)
 
+    # 画像データを保存
+    if first_mosaic:
+        original_desktop_image = image_np.copy()
+        first_mosaic = False
+
     # 画面全体にぼかしをかける
+    blur_kernel_size = (101, 101)
     blurred_image = cv2.GaussianBlur(image_np, blur_kernel_size, 0)
 
-    # モザイクをかけた画像をデスクトップに戻す
+    # デスクトップにぼかしを適用
     img_data = blurred_image.tobytes()
+    set_blur(img_data)
 
+# ぼかし解除の関数
+
+
+def unmosaic():
+    global original_desktop_image
+
+    if original_desktop_image is not None:
+        # 開いているウィンドウを閉じる
+        cv2.destroyAllWindows()
+
+        # オリジナルのデスクトップ画像に戻す
+        img_data = original_desktop_image.tobytes()
+        set_blur(img_data)
+
+# ぼかしをセットする関数
+
+
+def set_blur(img_data):
     # BITMAPINFOHEADER構造体の作成
     class BITMAPINFOHEADER(ctypes.Structure):
         _fields_ = [
@@ -81,7 +105,6 @@ def mosaic():
     bmi.bmiHeader = bmi_header
 
     hdc = win32gui.GetDC(0)
-    # ぼかしを表示する範囲
     ctypes.windll.gdi32.SetDIBitsToDevice(
         hdc, 0, 0, screen_width, screen_height,
         0, 0, 0, screen_height, img_data, ctypes.byref(
@@ -89,45 +112,33 @@ def mosaic():
     )
     win32gui.ReleaseDC(0, hdc)
 
-    # GUIリソースの解放
-    win32gui.ReleaseDC(hwnd, hwnd_dc)
-    win32gui.DeleteObject(save_bitmap.GetHandle())
-
-    # オリジナルのデスクトップ画像を保存
-    original_desktop_image = image_np.copy()
-
-# ぼかしの解除関数
+# キーボードイベントのハンドラ
 
 
-def unmosaic():
-    global original_desktop_image
-
-    # ウィンドウを閉じる
-    cv2.destroyAllWindows()
-
-    # ウィンドウスクリーンにオリジナルの画像を戻す
-    img_data = original_desktop_image.tobytes()
-
-    # 画面全体にオリジナルの画像を表示
-    hdc = win32gui.GetDC(0)
-    ctypes.windll.gdi32.SetDIBitsToDevice(
-        hdc, 0, 0, screen_width, screen_height,
-        0, 0, 0, screen_height, img_data, ctypes.byref(
-            bmi), win32con.DIB_RGB_COLORS
-    )
-    win32gui.ReleaseDC(0, hdc)
-
-# マウスイベントハンドラ
+def on_key_press(event):
+    if event.name == 'enter':
+        # キーが押されるとぼかし処理を非同期に実行
+        threading.Thread(target=mosaic).start()
 
 
-def on_move(x, y):
-    threading.Thread(target=mosaic).start()
+# キーのイベントを監視
+keyboard.on_press_key('enter', on_key_press)
+
+# メインの無限ループ
+while True:
+    try:
+        # キーの待機
+        keyboard.wait('enter', suppress=True)
+
+        # 解除処理を非同期に実行
+        threading.Thread(target=unmosaic).start()
+
+    except KeyboardInterrupt:
+        # Ctrl+Cでプログラム終了
+        break
 
 
-# マウスの監視を開始
-with mouse.Listener(on_move=on_move) as listener:
-    listener.join()
-
+# guiテスト-------------------------------------------------------------------
 
 # import threading
 # import time
