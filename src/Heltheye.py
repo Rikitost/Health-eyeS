@@ -25,8 +25,127 @@ import win32con
 import win32ui
 import win32api
 import ctypes
-import mosaic
-import refreshfream
+# import mosaic
+# import refreshfream
+
+# --------------------------------------------------------------------------------------------------------
+# グローバル変数: オリジナルのデスクトップ画像
+original_desktop_image = None
+screen_width = win32api.GetSystemMetrics(win32con.SM_CXSCREEN) * 2
+screen_height = win32api.GetSystemMetrics(win32con.SM_CYSCREEN) * 2
+
+# 初回のぼかし処理フラグ
+first_mosaic = True
+
+# ウィンドウを非表示にする関数
+
+
+def hide_window(hwnd):
+    win32gui.ShowWindow(hwnd, win32con.SW_HIDE)
+
+# ウィンドウを表示にする関数
+
+
+def show_window(hwnd):
+    win32gui.ShowWindow(hwnd, win32con.SW_SHOWNOACTIVATE)
+
+# ぼかしをかける関数
+
+
+def mosaic():
+    global original_desktop_image, first_mosaic
+
+    # ウィンドウスクリーンのキャプチャ
+    hwnd = win32gui.GetDesktopWindow()
+    hide_window(hwnd)  # ウィンドウを非表示にする
+
+    hwnd_dc = win32gui.GetWindowDC(hwnd)
+    mfc_dc = win32ui.CreateDCFromHandle(hwnd_dc)
+    save_dc = mfc_dc.CreateCompatibleDC()
+    save_bitmap = win32ui.CreateBitmap()
+    save_bitmap.CreateCompatibleBitmap(mfc_dc, screen_width, screen_height)
+    save_dc.SelectObject(save_bitmap)
+    save_dc.BitBlt((0, 0), (screen_width, screen_height),
+                   mfc_dc, (0, 0), win32con.SRCCOPY)
+
+    # ビットマップから画像データを取得
+    bmp_info = save_bitmap.GetInfo()
+    bmp_data = save_bitmap.GetBitmapBits(True)
+    image_np = np.frombuffer(bmp_data, dtype=np.uint8).reshape(
+        screen_height, screen_width, 4)
+
+    # 画像データを保存
+    if first_mosaic:
+        original_desktop_image = image_np.copy()
+        first_mosaic = False
+
+    # 画面全体にぼかしをかける
+    blur_kernel_size = (101, 101)
+    blurred_image = cv2.GaussianBlur(image_np, blur_kernel_size, 0)
+
+    # デスクトップにぼかしを適用
+    img_data = blurred_image.tobytes()
+    set_blur(img_data)
+
+    show_window(hwnd)  # ウィンドウを再表示
+
+# ぼかし解除の関数
+
+
+def unmosaic():
+    global original_desktop_image
+
+    if original_desktop_image is not None:
+        # 開いているウィンドウを閉じる
+        cv2.destroyAllWindows()
+
+        # オリジナルのデスクトップ画像に戻す
+        img_data = original_desktop_image.tobytes()
+        set_blur(img_data)
+
+# ぼかしをセットする関数
+
+
+def set_blur(img_data):
+    # BITMAPINFOHEADER構造体の作成
+    class BITMAPINFOHEADER(ctypes.Structure):
+        _fields_ = [
+            ("biSize", ctypes.c_uint32),
+            ("biWidth", ctypes.c_long),
+            ("biHeight", ctypes.c_long),
+            ("biPlanes", ctypes.c_short),
+            ("biBitCount", ctypes.c_short),
+            ("biCompression", ctypes.c_uint32),
+            ("biSizeImage", ctypes.c_uint32),
+            ("biXPelsPerMeter", ctypes.c_long),
+            ("biYPelsPerMeter", ctypes.c_long),
+            ("biClrUsed", ctypes.c_uint32),
+            ("biClrImportant", ctypes.c_uint32),
+        ]
+
+    bmi_header = BITMAPINFOHEADER()
+    bmi_header.biSize = ctypes.sizeof(BITMAPINFOHEADER)
+    bmi_header.biWidth = screen_width
+    bmi_header.biHeight = -screen_height
+    bmi_header.biPlanes = 1
+    bmi_header.biBitCount = 32
+    bmi_header.biCompression = win32con.BI_RGB
+
+    # BITMAPINFO構造体の作成
+    class BITMAPINFO(ctypes.Structure):
+        _fields_ = [("bmiHeader", BITMAPINFOHEADER),
+                    ("bmiColors", ctypes.c_ulong * 3)]
+
+    bmi = BITMAPINFO()
+    bmi.bmiHeader = bmi_header
+
+    hdc = win32gui.GetDC(0)
+    ctypes.windll.gdi32.SetDIBitsToDevice(
+        hdc, 0, 0, screen_width, screen_height,
+        0, 0, 0, screen_height, img_data, ctypes.byref(
+            bmi), win32con.DIB_RGB_COLORS
+    )
+    win32gui.ReleaseDC(0, hdc)
 
 
 # 入力された値(fw,ew)から距離を求める関数--------------------------------------------------------------------
@@ -204,23 +323,29 @@ while True:
         disAns = distance(sampleLen, fwSample, ewSample,
                           statistics.mode(fwcount), statistics.mode(ewcount))
         if disAns == -1:
+            # ぼかしの処理
+            mosaic()
             # コマンドライン
             print('10cm以下です!近すぎます!!\n')
         elif disAns == -2:
+            # ぼかしの処理
+            unmosaic()
             print('70cm以上離れています!!\n')
         else:
             if disAns < 30:
-                # 通知の設定
-                notification_title = 'ちかい'
-                notification_message = 'ちかづきすぎですはなれて！'
-                notification_timeout = 10  # 表示時間（秒）
+                # ぼかしの処理
+                mosaic()
+                # # 通知の設定
+                # notification_title = 'ちかい'
+                # notification_message = 'ちかづきすぎですはなれて！'
+                # notification_timeout = 10  # 表示時間（秒）
 
-                # 通知を送る
-                notification.notify(
-                    title=notification_title,
-                    message=notification_message,
-                    timeout=notification_timeout
-                )
+                # # 通知を送る
+                # notification.notify(
+                #     title=notification_title,
+                #     message=notification_message,
+                #     timeout=notification_timeout
+                # )
                 # コマンドライン
                 print('顔が近いので少し離れてください')
             print('%.2fcm\n' % disAns)    # 小数第２位まで出力
@@ -231,8 +356,6 @@ while True:
 
     # 画面に距離を表示
     if disAns == -1:
-        # ぼかしの処理
-        mosaic.mosaic()
         # imshowで表示させている
         cv2.putText(frame,
                     # テキスト(英数字のみ)
@@ -246,7 +369,6 @@ while True:
                     thickness=2,        # 文字の太さ
                     lineType=cv2.LINE_AA)    # アルゴリズムの種類（文字を滑らかにするかどうか,デフォルトはcv2.LINE_8）
     elif disAns == -2:
-        refreshfream.refresh_window()
         # 元データ
         cv2.putText(frame,
                     text="Over 70 cm! Please come closer!!",
@@ -258,8 +380,6 @@ while True:
                     lineType=cv2.LINE_AA)
     else:
         if disAns < 30 and disAns != 0:     # 30cm未満の場合、警告を出す
-            # ぼかしの処理
-            mosaic.mosaic()
             cv2.putText(frame,
                         text="Less than 30 cm! Please stay away!!",
                         org=(370, 60),
@@ -307,6 +427,7 @@ while True:
             textChange = 0
 
 # 終了処理
+unmosaic()
 # カメラのリソースを開放する
 cap.release()
 # OpenCVのウィンドウをすべて閉じる

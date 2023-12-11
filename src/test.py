@@ -1,5 +1,3 @@
-# 案1--------------------------------------------------------------
-
 import cv2
 import numpy as np
 import win32gui
@@ -18,6 +16,18 @@ screen_height = win32api.GetSystemMetrics(win32con.SM_CYSCREEN) * 2
 # 初回のぼかし処理フラグ
 first_mosaic = True
 
+# ウィンドウを非表示にする関数
+
+
+def hide_window(hwnd):
+    win32gui.ShowWindow(hwnd, win32con.SW_HIDE)
+
+# ウィンドウを表示にする関数
+
+
+def show_window(hwnd):
+    win32gui.ShowWindow(hwnd, win32con.SW_SHOWNOACTIVATE)
+
 # ぼかしをかける関数
 
 
@@ -26,6 +36,8 @@ def mosaic():
 
     # ウィンドウスクリーンのキャプチャ
     hwnd = win32gui.GetDesktopWindow()
+    hide_window(hwnd)  # ウィンドウを非表示にする
+
     hwnd_dc = win32gui.GetWindowDC(hwnd)
     mfc_dc = win32ui.CreateDCFromHandle(hwnd_dc)
     save_dc = mfc_dc.CreateCompatibleDC()
@@ -53,6 +65,8 @@ def mosaic():
     # デスクトップにぼかしを適用
     img_data = blurred_image.tobytes()
     set_blur(img_data)
+
+    show_window(hwnd)  # ウィンドウを再表示
 
 # ぼかし解除の関数
 
@@ -134,8 +148,170 @@ while True:
         threading.Thread(target=unmosaic).start()
 
     except KeyboardInterrupt:
+        unmosaic()
         # Ctrl+Cでプログラム終了
         break
+
+
+# ステップ1
+# # 画面サイズを取得
+# screen_width = win32api.GetSystemMetrics(win32con.SM_CXSCREEN) * 2
+# screen_height = win32api.GetSystemMetrics(win32con.SM_CYSCREEN) * 2
+
+# # フルスクリーンウィンドウの作成
+# cv2.namedWindow("Fullscreen", cv2.WND_PROP_FULLSCREEN)
+# cv2.setWindowProperty(
+#     "Fullscreen", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+
+# # ダミーの画像（真っ白な画像）を作成
+# dummy_image = np.ones((screen_height, screen_width, 3), np.uint8) * 255
+
+# # ウィンドウに画像を表示
+# cv2.imshow("Fullscreen", dummy_image)
+
+# # キーが押されるまで待機
+# cv2.waitKey(0)
+# cv2.destroyAllWindows()
+
+
+# # 案1--------------------------------------------------------------
+
+# import cv2
+# import numpy as np
+# import win32gui
+# import win32con
+# import win32ui
+# import win32api
+# import ctypes
+# import threading
+# import keyboard
+
+# # グローバル変数: オリジナルのデスクトップ画像
+# original_desktop_image = None
+# screen_width = win32api.GetSystemMetrics(win32con.SM_CXSCREEN) * 2
+# screen_height = win32api.GetSystemMetrics(win32con.SM_CYSCREEN) * 2
+
+# # 初回のぼかし処理フラグ
+# first_mosaic = True
+
+# # ぼかしをかける関数
+
+
+# def mosaic():
+#     global original_desktop_image, first_mosaic
+
+#     # ウィンドウスクリーンのキャプチャ
+#     hwnd = win32gui.GetDesktopWindow()
+#     hwnd_dc = win32gui.GetWindowDC(hwnd)
+#     mfc_dc = win32ui.CreateDCFromHandle(hwnd_dc)
+#     save_dc = mfc_dc.CreateCompatibleDC()
+#     save_bitmap = win32ui.CreateBitmap()
+#     save_bitmap.CreateCompatibleBitmap(mfc_dc, screen_width, screen_height)
+#     save_dc.SelectObject(save_bitmap)
+#     save_dc.BitBlt((0, 0), (screen_width, screen_height),
+#                    mfc_dc, (0, 0), win32con.SRCCOPY)
+
+#     # ビットマップから画像データを取得
+#     bmp_info = save_bitmap.GetInfo()
+#     bmp_data = save_bitmap.GetBitmapBits(True)
+#     image_np = np.frombuffer(bmp_data, dtype=np.uint8).reshape(
+#         screen_height, screen_width, 4)
+
+#     # 画像データを保存
+#     if first_mosaic:
+#         original_desktop_image = image_np.copy()
+#         first_mosaic = False
+
+#     # 画面全体にぼかしをかける
+#     blur_kernel_size = (101, 101)
+#     blurred_image = cv2.GaussianBlur(image_np, blur_kernel_size, 0)
+
+#     # デスクトップにぼかしを適用
+#     img_data = blurred_image.tobytes()
+#     set_blur(img_data)
+
+# # ぼかし解除の関数
+
+
+# def unmosaic():
+#     global original_desktop_image
+
+#     if original_desktop_image is not None:
+#         # 開いているウィンドウを閉じる
+#         cv2.destroyAllWindows()
+
+#         # オリジナルのデスクトップ画像に戻す
+#         img_data = original_desktop_image.tobytes()
+#         set_blur(img_data)
+
+# # ぼかしをセットする関数
+
+
+# def set_blur(img_data):
+#     # BITMAPINFOHEADER構造体の作成
+#     class BITMAPINFOHEADER(ctypes.Structure):
+#         _fields_ = [
+#             ("biSize", ctypes.c_uint32),
+#             ("biWidth", ctypes.c_long),
+#             ("biHeight", ctypes.c_long),
+#             ("biPlanes", ctypes.c_short),
+#             ("biBitCount", ctypes.c_short),
+#             ("biCompression", ctypes.c_uint32),
+#             ("biSizeImage", ctypes.c_uint32),
+#             ("biXPelsPerMeter", ctypes.c_long),
+#             ("biYPelsPerMeter", ctypes.c_long),
+#             ("biClrUsed", ctypes.c_uint32),
+#             ("biClrImportant", ctypes.c_uint32),
+#         ]
+
+#     bmi_header = BITMAPINFOHEADER()
+#     bmi_header.biSize = ctypes.sizeof(BITMAPINFOHEADER)
+#     bmi_header.biWidth = screen_width
+#     bmi_header.biHeight = -screen_height
+#     bmi_header.biPlanes = 1
+#     bmi_header.biBitCount = 32
+#     bmi_header.biCompression = win32con.BI_RGB
+
+#     # BITMAPINFO構造体の作成
+#     class BITMAPINFO(ctypes.Structure):
+#         _fields_ = [("bmiHeader", BITMAPINFOHEADER),
+#                     ("bmiColors", ctypes.c_ulong * 3)]
+
+#     bmi = BITMAPINFO()
+#     bmi.bmiHeader = bmi_header
+
+#     hdc = win32gui.GetDC(0)
+#     ctypes.windll.gdi32.SetDIBitsToDevice(
+#         hdc, 0, 0, screen_width, screen_height,
+#         0, 0, 0, screen_height, img_data, ctypes.byref(
+#             bmi), win32con.DIB_RGB_COLORS
+#     )
+#     win32gui.ReleaseDC(0, hdc)
+
+# # キーボードイベントのハンドラ
+
+
+# def on_key_press(event):
+#     if event.name == 'enter':
+#         # キーが押されるとぼかし処理を非同期に実行
+#         threading.Thread(target=mosaic).start()
+
+
+# # キーのイベントを監視
+# keyboard.on_press_key('enter', on_key_press)
+
+# # メインの無限ループ
+# while True:
+#     try:
+#         # キーの待機
+#         keyboard.wait('enter', suppress=True)
+
+#         # 解除処理を非同期に実行
+#         threading.Thread(target=unmosaic).start()
+
+#     except KeyboardInterrupt:
+#         # Ctrl+Cでプログラム終了
+#         break
 
 
 # guiテスト-------------------------------------------------------------------

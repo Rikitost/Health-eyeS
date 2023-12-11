@@ -5,3 +5,4 @@ plyer
 pywin3
 pynput
 keyboard
+PyQt5
