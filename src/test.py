@@ -13,7 +13,9 @@ import win32con
 import win32ui
 import win32api
 import ctypes
-
+import pygetwindow as gw
+import pyautogui
+import keyboard
 # --------------------------------------------------------------------------------------------------------
 # グローバル変数: オリジナルのデスクトップ画像
 original_desktop_image = None
@@ -23,18 +25,6 @@ screen_height = win32api.GetSystemMetrics(win32con.SM_CYSCREEN) * 2
 # 初回のぼかし処理フラグ
 mosaic_flg = True
 
-# ウィンドウを非表示にする関数
-
-
-def hide_window(hwnd):
-    win32gui.ShowWindow(hwnd, win32con.SW_HIDE)
-
-# ウィンドウを表示にする関数
-
-
-def show_window(hwnd):
-    win32gui.ShowWindow(hwnd, win32con.SW_SHOWNOACTIVATE)
-
 # ぼかしをかける関数
 
 
@@ -43,7 +33,7 @@ def mosaic():
 
     # ウィンドウスクリーンのキャプチャ
     hwnd = win32gui.GetDesktopWindow()
-    hide_window(hwnd)  # ウィンドウを非表示にする
+    win32gui.ShowWindow(hwnd, win32con.SW_HIDE)
 
     hwnd_dc = win32gui.GetWindowDC(hwnd)
     mfc_dc = win32ui.CreateDCFromHandle(hwnd_dc)
@@ -72,8 +62,6 @@ def mosaic():
     # デスクトップにぼかしを適用
     img_data = blurred_image.tobytes()
     set_blur(img_data)
-
-    show_window(hwnd)  # ウィンドウを再表示
 
 # ぼかし解除の関数
 
@@ -267,7 +255,7 @@ if cap.isOpened() is False:
 
 
 # 時間の設定のフォーム
-timeset.timeset_task()
+# timeset.timeset_task()
 
 
 # 無限ループで読み取った映像に変化を加える（1フレームごとに区切って変化）
@@ -310,23 +298,23 @@ while True:
                           statistics.mode(fwcount), statistics.mode(ewcount))
         if disAns == -1:
             # ぼかしの処理
-            mosaic()
+            unmosaic()
             # コマンドライン
             print('10cm以下です!近すぎます!!\n')
         elif disAns == -2:
             # ぼかしの処理
-            unmosaic()
+            mosaic()
             print('70cm以上離れています!!\n')
         else:
             # 30以下
             if disAns < 30:
                 # ぼかしの処理
-                mosaic()
+                unmosaic()
                 # コマンドライン
                 print('顔が近いので少し離れてください')
             # 30以上
             elif disAns >= 30:
-                unmosaic()
+                mosaic()
             print('%.2fcm\n' % disAns)    # 小数第２位まで出力
 
 # カウントのリセット
