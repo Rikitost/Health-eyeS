@@ -279,7 +279,7 @@ class MyApp:
             self.ew_count = []
         # self.toggle_visibility()  # 初回実行
         # 0.1秒後に再度切り替える
-        self.root.after(10, self.switch_visibility_periodically)
+        self.root.after(100, self.switch_visibility_periodically)
 
 
 if __name__ == "__main__":

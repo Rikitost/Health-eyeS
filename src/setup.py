@@ -11,7 +11,7 @@ build_exe_options = {
 
 setup(
     name="Heltheye",
-    version="1.1",
+    version="1.2",
     description="Your application description",
     options={"build_exe": build_exe_options},
     executables=[Executable("Heltheye.py")],
