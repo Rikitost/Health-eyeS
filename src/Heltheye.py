@@ -278,7 +278,7 @@ class MyApp:
             self.fw_count = []
             self.ew_count = []
         # self.toggle_visibility()  # 初回実行
-        # 0.1秒後に再度切り替える
+        # 10秒後に1度顔の判定
         self.root.after(100, self.switch_visibility_periodically)
 
 
