@@ -25,7 +25,7 @@ class MyApp:
         self.init_config()
         # GUI構築
         self.build_gui()
-        # 初手は非表示
+        # 初手は非表示透明度0
         self.toggle_visibility_off()
 
         # 10秒ごとに最前面と最背面に切り替える処理を開始
@@ -78,6 +78,13 @@ class MyApp:
                          59,  54]       # 事前に計測した距離に対応する目の大きさ
 
         # ウィンドウの初期設定
+        # ウィンドウの表示
+        self.root.deiconify()
+
+        # ウィンドウを透明クリック可能にする
+        self.root.wm_attributes("-transparentcolor", "white")
+
+        # ウィンドウの初期設定
         # 画面全体
         self.root.attributes("-fullscreen", True)
         # タスクバー
@@ -102,11 +109,13 @@ class MyApp:
 
     # 表示
     def toggle_visibility_on(self):
-        self.root.deiconify()
+        # ウィンドウの透明度を設定 (0: 完全透明, 1: 完全不透明)
+        self.root.attributes("-alpha", 0.97)
 
     # 非表示
     def toggle_visibility_off(self):
-        self.root.withdraw()
+        # ウィンドウの透明度を設定 (0: 完全透明, 1: 完全不透明)
+        self.root.attributes("-alpha", 0)
 
     # 入力された値(fw,ew)から距離を求める関数--------------------------------------------------------------------
 
@@ -232,7 +241,7 @@ class MyApp:
             disAns = self.distance(self.sampleLen, self.fwSample, self.ewSample,
                                    statistics.mode(self.fwcount), statistics.mode(self.ewcount))
             if disAns == -1:
-                # ぼかしの処理
+                # 警告画面表示
                 self.toggle_visibility_on()
                 # コマンドライン
                 print('10cm以下です!近すぎます!!\n')
@@ -257,8 +266,8 @@ class MyApp:
             self.fwcount = []
             self.ewcount = []
         # self.toggle_visibility()  # 初回実行
-        # 1秒後に再度切り替える 7秒で1
-        self.root.after(100, self.switch_visibility_periodically)
+        # 0.1秒後に再度切り替える
+        self.root.after(10, self.switch_visibility_periodically)
 
 
 if __name__ == "__main__":
