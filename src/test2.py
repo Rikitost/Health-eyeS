@@ -25,7 +25,7 @@ class MyApp:
         self.init_config()
         # GUI構築
         self.build_gui()
-
+        # 初手は非表示
         self.toggle_visibility_off()
 
         # 10秒ごとに最前面と最背面に切り替える処理を開始
@@ -91,9 +91,9 @@ class MyApp:
 
     def build_gui(self):
         # GUIの構築をここに記述
-        toggle_button = tk.Button(
-            self.root, text="Toggle Visibility", command=self.toggle_visibility)
-        toggle_button.pack(pady=20)
+        # labelの情報
+        toggle_label = tk.Label(self.root, text="近いです離れてください")
+        toggle_label.pack(pady=20)
 
     # ウィンドウにある終了
     def toggle_visibility(self):
