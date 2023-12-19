@@ -5,7 +5,7 @@ import statistics   # 最頻値
 import tkinter as tk
 # 音
 # from plyer import notification
-import timeset
+# import timeset
 # ぼかしの処理
 import numpy as np
 import ctypes
