@@ -9,10 +9,19 @@ build_exe_options = {
     "include_files": ["data/"],  # 参照するフォルダやリソースを指定
 }
 
+# プラットフォームに応じてbaseパラメータを設定
+if sys.platform == "win32":
+    base = "Win32GUI"  # Windows用にGUIアプリケーションとして設定
+elif sys.platform == "darwin":
+    base = "MacOSXApp"  # macOS用にGUIアプリケーションとして設定
+else:
+    base = None
+
+
 setup(
     name="Heltheye",
     version="1.2",
     description="Your application description",
     options={"build_exe": build_exe_options},
-    executables=[Executable("Heltheye.py")],
+    executables=[Executable("Heltheye.py", base=base)],
 )

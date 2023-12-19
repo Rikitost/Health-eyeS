@@ -1,6 +1,6 @@
 # Health-eyeS
 モジュール
 opencv
-plyer
 pynput
+pystray
 pip install pyautogui pillow
