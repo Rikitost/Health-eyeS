@@ -31,7 +31,7 @@ class MosaicForm:
         # 初手は非表示(透明度0)
         self.toggle_visibility_off()
 
-        # スレッドで定期的にUIを更新
+        # スレッドで定期的に更新
         # self.update_thread = threading.Thread(
         #     target=self.update_gui_thread, daemon=True)
         # self.update_thread.start()
@@ -42,7 +42,10 @@ class MosaicForm:
     def init_camera(self):
         # カスケード分類器のパスを各変数に代入
         fase_cascade_path = 'data\haarcascades\haarcascade_frontalface_default.xml'
-        eye_cascade_path = 'data\haarcascades\haarcascade_eye.xml'
+        # 眼鏡無し
+        # eye_cascade_path = 'data\haarcascades\haarcascade_eye.xml'
+        # 眼鏡あり
+        eye_cascade_path = 'data\haarcascades\haarcascade_eye_tree_eyeglasses.xml'
 
         # カスケード分類器の読み込み
         self.face_cascade = cv2.CascadeClassifier(fase_cascade_path)
@@ -282,7 +285,7 @@ class MosaicForm:
                 elif dis_Ans >= 30:
                     self.toggle_visibility_off()
                     # ぼかし
-                print('%.2fcm\n' % dis_Ans)    # 小数第２位まで出力
+            print('%.2fcm\n' % dis_Ans)    # 小数第２位まで出力
 
             # カウントのリセット
             self.fw_count = []
@@ -292,7 +295,7 @@ class MosaicForm:
         # 0.1秒後に再度切り替える
         self.root.after(100, self.switch_visibility_periodically)
 
-# threadで
+# threadで実行した場合
     # def update_gui_thread(self):
     #     while True:
     #         self.switch_visibility_periodically()
