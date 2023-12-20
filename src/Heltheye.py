@@ -11,6 +11,7 @@ import numpy as np
 import ctypes
 import pygetwindow as gw
 import pyautogui
+# テスト
 
 
 class MyApp:
