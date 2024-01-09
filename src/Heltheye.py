@@ -3,8 +3,6 @@ import cv2
 import sys
 import statistics   # 最頻値
 import tkinter as tk
-# 音
-# from plyer import notification
 # import timeset
 # ぼかしの処理
 import numpy as np
@@ -276,8 +274,8 @@ class MyApp:
                     print('顔が近いので少し離れてください')
                 # 30以上
                 elif dis_Ans >= 30:
-                    self.toggle_visibility_off()
                     # ぼかし
+                    self.toggle_visibility_off()
                 print('%.2fcm\n' % dis_Ans)    # 小数第２位まで出力
 
             # カウントのリセット
