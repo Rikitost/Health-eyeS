@@ -253,38 +253,33 @@ class MosaicForm:
             cv2.rectangle(frame, (self.ex, self.ey), (self.ex + self.ew, self.ey + self.eh),
                           self.FRAME_RGB_B, self.FRAME_LINESIZE)
 
+            # 指定の枚数分までのカウントの判定
         if self.mode_cnt < self.MODE:
-            # テスト用
+            # カウント
             print(self.mode_cnt)
             self.fw_count.insert(self.mode_cnt, self.fw)
             self.ew_count.insert(self.mode_cnt, self.ew)
             self.mode_cnt += 1
         else:
-            # テスト用
+            # カウントの初期化
             self.mode_cnt = 0
+            # テスト用でカウントの表示
             print(self.mode_cnt)
+
+            # 距離の計算
             dis_Ans = self.distance(self.SAMPLE_LEN, self.FW_SAMPLE, self.EW_SAMPLE,
                                     statistics.mode(self.fw_count), statistics.mode(self.ew_count))
-            if dis_Ans == -1:
+
+            # 距離で判定
+            if dis_Ans == -1 or dis_Ans < 30:
                 # 警告画面表示
                 self.toggle_visibility_on()
                 # コマンドライン
                 print('10cm以下です!近すぎます!!\n')
-            elif dis_Ans == -2:
-                # ぼかしの処理
+            elif dis_Ans == -2 or dis_Ans >= 30:
+                # 警告画面表示
                 self.toggle_visibility_off()
                 print('70cm以上離れています!!\n')
-            else:
-                # 30以下
-                if dis_Ans < 30:
-                    # ぼかしの処理
-                    self.toggle_visibility_on()
-                    # コマンドライン
-                    print('顔が近いので少し離れてください')
-                # 30以上
-                elif dis_Ans >= 30:
-                    self.toggle_visibility_off()
-                    # ぼかし
             print('%.2fcm\n' % dis_Ans)    # 小数第２位まで出力
 
             # カウントのリセット
@@ -292,7 +287,7 @@ class MosaicForm:
             self.ew_count = []
 
         # self.toggle_visibility()  # 初回実行
-        # 0.1秒後に再度切り替える
+        # 0.1秒後で1枚
         self.root.after(100, self.switch_visibility_periodically)
 
 # threadで実行した場合
