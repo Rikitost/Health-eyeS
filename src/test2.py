@@ -218,11 +218,11 @@ class MyApp:
 
         # 顔の検出
         faces = self.face_cascade.detectMultiScale(
-            gray, scaleFactor=1.3, minNeighbors=5)
+            gray, scaleFactor=1.3, minNeighbors=4)
 
         # 目の検出
         eyes = self.eye_cascade.detectMultiScale(
-            gray, scaleFactor=1.3, minNeighbors=5)
+            gray, scaleFactor=1.3, minNeighbors=4)
 
         # 第1引数   効果を適応する画像
         # 第2引数   矩形の左上隅の座標
