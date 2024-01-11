@@ -3,20 +3,11 @@ import cv2
 import sys
 import statistics   # 最頻値
 import tkinter as tk
-import threading
-import time
-# 音
-# from plyer import notification
-# ぼかしの処理
-import numpy as np
-import ctypes
-import pygetwindow as gw
-import pyautogui
-# ファイルのimport
-# import timeset
+
+# クラス-----------------------------------------------------------------------------------------
 
 
-class MosaicForm:
+class MyApp:
     def __init__(self, root):
         self.root = root
         self.root.title("注意画面")
@@ -28,24 +19,17 @@ class MosaicForm:
         self.init_config()
         # GUI構築
         self.build_gui()
-        # 初手は非表示(透明度0)
+        # 初手は非表示透明度0
         self.toggle_visibility_off()
 
-        # スレッドで定期的に更新
-        # self.update_thread = threading.Thread(
-        #     target=self.update_gui_thread, daemon=True)
-        # self.update_thread.start()
-        # 1秒ごとに顔の判定距離計算等処理を開始
+        # 10秒ごとに最前面と最背面に切り替える処理を開始
         self.switch_visibility_periodically()
 
-# カメラ設定
+# カメラ設定------------------------------------------------------------------------------------------------------
     def init_camera(self):
         # カスケード分類器のパスを各変数に代入
         fase_cascade_path = 'data\haarcascades\haarcascade_frontalface_default.xml'
-        # 眼鏡無し
-        # eye_cascade_path = 'data\haarcascades\haarcascade_eye.xml'
-        # 眼鏡あり
-        eye_cascade_path = 'data\haarcascades\haarcascade_eye_tree_eyeglasses.xml'
+        eye_cascade_path = 'data\haarcascades\haarcascade_eye.xml'
 
         # カスケード分類器の読み込み
         self.face_cascade = cv2.CascadeClassifier(fase_cascade_path)
@@ -61,10 +45,12 @@ class MosaicForm:
             print("カメラが起動していないため終了しました")
             sys.exit()
 
-# 値の初期値
-    def init_config(self):
 
+# 値の初期値------------------------------------------------------------------------------------------------
+
+    def init_config(self):
         # 値の初期設定をここに記述
+
         self.FRAME_LINESIZE = 2       # 顔に四角を描画する際の線の太さ
         self.FRAME_RGB_G = (0, 255, 0)  # 四角形を描画する際の色を格納(緑)
         self.FRAME_RGB_B = (255, 0, 0)  # 四角形を描画する際の色を格納(青)
@@ -106,7 +92,7 @@ class MosaicForm:
         self.root.bind("<Configure>", lambda event: "break")
 
 
-# ウィンドウの設定
+# ウィンドウの設定------------------------------------------------------------------------------------------
 
     def build_gui(self):
         # GUIの構築をここに記述
@@ -114,24 +100,24 @@ class MosaicForm:
         toggle_label = tk.Label(self.root, text="近いです離れてください")
         toggle_label.pack(pady=20)
 
-    # ウィンドウにある終了
+
+# ウィンドウにある終了----------------------------------------------------------------------------------------------
 
     def toggle_visibility(self):
         self.cap.release()
         self.root.destroy()
 
-    # 表示
+# 表示---------------------------------------------------------------------------------------------------------------------
     def toggle_visibility_on(self):
         # ウィンドウの透明度を設定 (0: 完全透明, 1: 完全不透明)
         self.root.attributes("-alpha", 0.97)
 
-    # 非表示
+# 非表示---------------------------------------------------------------------------------------------------------------------
     def toggle_visibility_off(self):
         # ウィンドウの透明度を設定 (0: 完全透明, 1: 完全不透明)
         self.root.attributes("-alpha", 0)
 
-    # 入力された値(fw,ew)から距離を求める関数--------------------------------------------------------------------
-
+# 入力された値(fw,ew)から距離を求める関数--------------------------------------------------------------------
     def distance(self, sample_Len, fw_Sample, ew_Sample, fw, ew):
         value_Abs = []      # 入力された値xと事前に計測された値との絶対値を格納
         value_abs_cnt = 0             # カウントの役割をする変数
@@ -223,14 +209,14 @@ class MosaicForm:
                 ans = sample_Len[value_abs_cnt] + few_add
         return ans
 
-    # カメラで測定
+# カメラで測定---------------------------------------------------------------------------------------------------------
     def switch_visibility_periodically(self):
         ret, frame = self.cap.read()
 
         # カラーをモノクロ化したキャプチャを代入(グレースケール化)
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
-        # 顔の検出(minSizeによっては速度をあげれる)
+        # 顔の検出
         faces = self.face_cascade.detectMultiScale(
             gray, scaleFactor=1.3, minNeighbors=5)
 
@@ -253,51 +239,54 @@ class MosaicForm:
             cv2.rectangle(frame, (self.ex, self.ey), (self.ex + self.ew, self.ey + self.eh),
                           self.FRAME_RGB_B, self.FRAME_LINESIZE)
 
-            # 指定の枚数分までのカウントの判定
         if self.mode_cnt < self.MODE:
-            # カウント
+            # コマンド
             print(self.mode_cnt)
             self.fw_count.insert(self.mode_cnt, self.fw)
             self.ew_count.insert(self.mode_cnt, self.ew)
             self.mode_cnt += 1
         else:
-            # カウントの初期化
+            # テスト用
             self.mode_cnt = 0
-            # テスト用でカウントの表示
             print(self.mode_cnt)
-
-            # 距離の計算
             dis_Ans = self.distance(self.SAMPLE_LEN, self.FW_SAMPLE, self.EW_SAMPLE,
                                     statistics.mode(self.fw_count), statistics.mode(self.ew_count))
-
-            # 距離で判定
-            if dis_Ans == -1 or dis_Ans < 30:
+            if dis_Ans == -1:
                 # 警告画面表示
                 self.toggle_visibility_on()
+                self.MODE = 20
                 # コマンドライン
                 print('10cm以下です!近すぎます!!\n')
-            elif dis_Ans == -2 or dis_Ans >= 30:
-                # 警告画面表示
+            elif dis_Ans == -2:
+                # ぼかしの処理
                 self.toggle_visibility_off()
+                self.MODE = 50
                 print('70cm以上離れています!!\n')
-            print('%.2fcm\n' % dis_Ans)    # 小数第２位まで出力
+            else:
+                # 30以下
+                if dis_Ans < 30:
+                    # ぼかしの処理
+                    self.toggle_visibility_on()
+                    self.MODE = 20
+                    # コマンドライン
+                    print('顔が近いので少し離れてください')
+                # 30以上
+                elif dis_Ans >= 30:
+                    # ぼかし
+                    self.toggle_visibility_off()
+                    self.MODE = 50
+                print('%.2fcm\n' % dis_Ans)    # 小数第２位まで出力
 
             # カウントのリセット
             self.fw_count = []
             self.ew_count = []
-
         # self.toggle_visibility()  # 初回実行
-        # 0.1秒後で1枚
-        self.root.after(100, self.switch_visibility_periodically)
-
-# threadで実行した場合
-    # def update_gui_thread(self):
-    #     while True:
-    #         self.switch_visibility_periodically()
-    #         time.sleep(0.1)
+        # 5秒後に1度顔の判定
+        self.root.after(10, self.switch_visibility_periodically)
 
 
+# メインの表示-------------------------------------------------------------------------------------------------------
 if __name__ == "__main__":
     root = tk.Tk()
-    app = MosaicForm(root)
+    app = MyApp(root)
     root.mainloop()

@@ -3,15 +3,10 @@ import cv2
 import sys
 import statistics   # 最頻値
 import tkinter as tk
-# import timeset
-# ぼかしの処理
-import numpy as np
-import ctypes
-import pygetwindow as gw
-import pyautogui
-
 
 # クラス-----------------------------------------------------------------------------------------
+
+
 class MyApp:
     def __init__(self, root):
         self.root = root
@@ -245,7 +240,7 @@ class MyApp:
                           self.FRAME_RGB_B, self.FRAME_LINESIZE)
 
         if self.mode_cnt < self.MODE:
-            # テスト用
+            # コマンド
             print(self.mode_cnt)
             self.fw_count.insert(self.mode_cnt, self.fw)
             self.ew_count.insert(self.mode_cnt, self.ew)
@@ -259,31 +254,35 @@ class MyApp:
             if dis_Ans == -1:
                 # 警告画面表示
                 self.toggle_visibility_on()
+                self.MODE = 20
                 # コマンドライン
                 print('10cm以下です!近すぎます!!\n')
             elif dis_Ans == -2:
                 # ぼかしの処理
                 self.toggle_visibility_off()
+                self.MODE = 50
                 print('70cm以上離れています!!\n')
             else:
                 # 30以下
                 if dis_Ans < 30:
                     # ぼかしの処理
                     self.toggle_visibility_on()
+                    self.MODE = 20
                     # コマンドライン
                     print('顔が近いので少し離れてください')
                 # 30以上
                 elif dis_Ans >= 30:
                     # ぼかし
                     self.toggle_visibility_off()
+                    self.MODE = 50
                 print('%.2fcm\n' % dis_Ans)    # 小数第２位まで出力
 
             # カウントのリセット
             self.fw_count = []
             self.ew_count = []
         # self.toggle_visibility()  # 初回実行
-        # 10秒後に1度顔の判定
-        self.root.after(100, self.switch_visibility_periodically)
+        # 5秒後に1度顔の判定
+        self.root.after(10, self.switch_visibility_periodically)
 
 
 # メインの表示-------------------------------------------------------------------------------------------------------
