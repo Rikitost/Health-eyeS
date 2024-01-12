@@ -1,250 +1,292 @@
-# 顔を認識し、カメラから顔(目)までの距離を出す
-# 一定間隔おきに距離を出す
-# キー入力「0」で即座に距離を出す（精度低）
-# キー入力「1」でcmの表記位置変更
-# キー入力「Esc」で終了
-# 画面サイズ1280,720で計測
-
-
+# import
 import cv2
 import sys
 import statistics   # 最頻値
+import tkinter as tk
+
+# クラス-----------------------------------------------------------------------------------------
+
+
+class MyApp:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("注意画面")
+
+        # カメラの初期設定と準備
+        self.init_camera()
+
+        # 初期設定
+        self.init_config()
+        # GUI構築
+        self.build_gui()
+        # 初手は非表示透明度0
+        self.toggle_visibility_off()
+
+        # 10秒ごとに最前面と最背面に切り替える処理を開始
+        self.switch_visibility_periodically()
+
+# カメラ設定------------------------------------------------------------------------------------------------------
+    def init_camera(self):
+        # カスケード分類器のパスを各変数に代入
+        fase_cascade_path = 'data\haarcascades\haarcascade_frontalface_default.xml'
+        eye_cascade_path = 'data\haarcascades\haarcascade_eye.xml'
+
+        # カスケード分類器の読み込み
+        self.face_cascade = cv2.CascadeClassifier(fase_cascade_path)
+        self.eye_cascade = cv2.CascadeClassifier(eye_cascade_path)
+
+        # Webカメラの準備
+        self.cap = cv2.VideoCapture(0)
+        self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)  # カメラ画像の横幅を1280に設定
+        self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)  # カメラ画像の縦幅を720に設定
+
+        # カメラが起動していなかった場合は終了
+        if self.cap.isOpened() is False:
+            print("カメラが起動していないため終了しました")
+            sys.exit()
+
+
+# 値の初期値------------------------------------------------------------------------------------------------
+
+    def init_config(self):
+        # 値の初期設定をここに記述
+
+        self.FRAME_LINESIZE = 2       # 顔に四角を描画する際の線の太さ
+        self.FRAME_RGB_G = (0, 255, 0)  # 四角形を描画する際の色を格納(緑)
+        self.FRAME_RGB_B = (255, 0, 0)  # 四角形を描画する際の色を格納(青)
+        self.mode_cnt = 0     # カウントの際に使用
+        self.text_Change = 0  # cmの表記を画面上部に固定にするか、顔に追従するかの切り替え
+        self.fw = 100    # 顔の大きさの初期値（起動時エラー回避のため初期値設定）
+        self.fx = 100    # 顔のx座標の初期値
+        self.fy = 100    # 顔のy座標の初期値
+        self.ew = 100    # 目の大きさの初期値
+        self.ex = 100    # 目のx座標の初期値
+        self.ey = 100    # 目のy座標の初期値
+        self.dis_Ans = 0  # 計測した距離を格納
+        self.fw_count = []  # fwを一時的に格納（最頻値を出すために使用）
+        self.ew_count = []  # ewを一時的に格納（最頻値を出すために使用）
+        self.MODE = 50  # 最頻値を出すときの要素数（この値を変更することで計測値(cm)の正確性と計測にかかる時間が変化）
+        # fwSample,ewSampleに対応した顔とカメラとの距離(cm)
+        self.SAMPLE_LEN = [10,   15,  20,  30,  40,  50,  60,  70]
+        self.FW_SAMPLE = [999, 999, 999, 999, 431, 348,
+                          292, 253]       # 事前に計測した距離に対応する顔の大きさ
+        self.EW_SAMPLE = [268, 214, 161, 118,  90,  62,
+                          59,  54]       # 事前に計測した距離に対応する目の大きさ
+
+        # ウィンドウの初期設定
+        # ウィンドウの表示
+        self.root.deiconify()
+
+        # ウィンドウを透明クリック可能にする
+        self.root.wm_attributes("-transparentcolor", "white")
+
+        # ウィンドウの初期設定
+        # 画面全体
+        self.root.attributes("-fullscreen", True)
+        # タスクバー
+        self.root.overrideredirect(True)
+        # 最前面
+        self.root.attributes("-topmost", True)
+        # ウィンドウ移動、サイズ変更の無効
+        self.root.bind("<B1-Motion>", lambda event: "break")
+        self.root.bind("<Configure>", lambda event: "break")
+
+
+# ウィンドウの設定------------------------------------------------------------------------------------------
+
+    def build_gui(self):
+        # GUIの構築をここに記述
+        # labelの情報
+        toggle_label = tk.Label(self.root, text="近いです離れてください")
+        toggle_label.pack(pady=20)
+
+
+# ウィンドウにある終了----------------------------------------------------------------------------------------------
+
+    def toggle_visibility(self):
+        self.cap.release()
+        self.root.destroy()
+
+# 表示---------------------------------------------------------------------------------------------------------------------
+    def toggle_visibility_on(self):
+        # ウィンドウの透明度を設定 (0: 完全透明, 1: 完全不透明)
+        self.root.attributes("-alpha", 0.97)
+
+# 非表示---------------------------------------------------------------------------------------------------------------------
+    def toggle_visibility_off(self):
+        # ウィンドウの透明度を設定 (0: 完全透明, 1: 完全不透明)
+        self.root.attributes("-alpha", 0)
 
 # 入力された値(fw,ew)から距離を求める関数--------------------------------------------------------------------
-def distance(sample_len, fw_sample, ew_sample,fw,ew):
-    value_abs = []      # 入力された値xと事前に計測された値との絶対値を格納
-    value_abs_cnt = 0             # カウントの役割をする変数
-    ans = 0             # 顔と画面との距離を格納
-    standard = 90       # ewとfwのどちらを距離算出に使うかの基準数値 (90は50cmのとき)
-    
-    if ew >= standard :             # ewが基準値より小さければewを計算に使用
-        for i in ew_sample:          # ewとの差の絶対値を格納
-            value_abs.insert(value_abs_cnt,abs(i - ew))
-            value_abs_cnt += 1
-        
-        values_abs_sorted = sorted(value_abs)        # 絶対値の値たちを昇順にソートして格納   
-        
-        value_abs_cnt = 0
-        for i in value_abs:         # ewに一番近い値（絶対値）の要素番号を見つける
-            if i == values_abs_sorted[0]:
-                break
-            value_abs_cnt += 1
-        
-        if ew > ew_sample[0]:        # 距離が恐らく10cm以下の場合
-            ans = -1
-        elif ew == ew_sample[value_abs_cnt]:       # ewとewに最も近い値が等しい場合
-            ans = sample_len[value_abs_cnt]
-        elif ew > ew_sample[value_abs_cnt]:        # ewに最も近い値がewよりも小さい場合
-            few_diff = abs(ew_sample[value_abs_cnt] - ew_sample[value_abs_cnt-1])        # ewの大きさの差の絶対値few_diffrence
-            few_chg = abs(sample_len[value_abs_cnt] - sample_len[value_abs_cnt-1]) / few_diff # 1cmごとに変化するewの大きさfew_change
-            few_chg_diff = abs(ew - ew_sample[value_abs_cnt-1])                   # ewより小さくて最も近い値からどれだけの差があるか
-            few_add = few_chg * few_chg_diff                               # ewより小さくて最も近い値より何cm離れているか
-            ans = sample_len[value_abs_cnt-1] + few_add                      # どれだけ画面から離れているか
-        else:                       # ewに最も近い値がewよりも大きい場合
-            few_diff = abs(ew_sample[value_abs_cnt] - ew_sample[value_abs_cnt+1])        # ewの大きさの差
-            few_chg = abs(sample_len[value_abs_cnt] - sample_len[value_abs_cnt+1]) / few_diff # ewが1増えるごとに何cm増えるか
-            few_chg_diff = abs(ew - ew_sample[value_abs_cnt])                     # ewより大きくて最も近い値からどれだけの差があるか
-            few_add = few_chg * few_chg_diff                               # ewより大きくて最も近い値より何cm離れているか
-            ans = sample_len[value_abs_cnt] + few_add                        # どれだけ画面から離れているか
-    else:       # ewが基準値より大きければfwを計算に使用
-        
-        for i in fw_sample:                      # fwとの差の絶対値を格納
-            value_abs.insert(value_abs_cnt,abs(i - fw))
-            value_abs_cnt += 1
-        
-        values_abs_sorted = sorted(value_abs)    # 絶対値の値たちをソート（昇順）を格納
-        
-        value_abs_cnt = 0
-        for i in value_abs:                     # fwに一番近い値（絶対値）の要素番号を見つける
-            if i == values_abs_sorted[0]:
-                break
-            value_abs_cnt += 1
-        
-        if fw < fw_sample[len(fw_sample)-1]:  # 距離が恐らく70cm以上の場合
-            ans = -2
-        elif fw == fw_sample[value_abs_cnt]:       # fwとfwに最も近い値が等しい場合
-            ans = sample_len[value_abs_cnt]
-        elif fw > fw_sample[value_abs_cnt]:        # fwに最も近い値がfwよりも小さい場合
-            few_diff = abs(fw_sample[value_abs_cnt] - fw_sample[value_abs_cnt-1])        # fwの大きさの差
-            few_chg = abs(sample_len[value_abs_cnt] - sample_len[value_abs_cnt-1]) / few_diff # 1cmごとに変化するfwの大きさ
-            few_chg_diff = abs(fw - fw_sample[value_abs_cnt-1])                   # fwより小さくて最も近い値からどれだけの差があるか
-            few_add = few_chg * few_chg_diff                               # fwより小さくて最も近い値より何cm離れているか
-            ans = sample_len[value_abs_cnt-1] + few_add                      # どれだけ画面から離れているか
-        else:                           # fwに最も近い値がfwよりも大きい場合
-            few_diff = abs(fw_sample[value_abs_cnt] - fw_sample[value_abs_cnt+1])        # fwの大きさの差
-            few_chg = abs(sample_len[value_abs_cnt] - sample_len[value_abs_cnt+1]) / few_diff # fwが1増えるごとに何cm増えるか
-            few_chg_diff = abs(fw - fw_sample[value_abs_cnt])                     # fwより大きくて最も近い値からどれだけの差があるか
-            few_add = few_chg * few_chg_diff                               # fwより大きくて最も近い値より何cm離れているか
-            ans = sample_len[value_abs_cnt] + few_add                        # どれだけ画面から離れているか
-    return ans
-# ---------------------------------------------------------------------------------------------------------
+    def distance(self, sample_Len, fw_Sample, ew_Sample, fw, ew):
+        value_Abs = []      # 入力された値xと事前に計測された値との絶対値を格納
+        value_abs_cnt = 0             # カウントの役割をする変数
+        ans = 0             # 顔と画面との距離を格納
+        standard = 90       # ewとfwのどちらを距離算出に使うかの基準数値 (90は50cmのとき)
 
-# カスケード分類器のパスを各変数に代入
-fase_cascade_path = './data/haarcascades/haarcascade_frontalface_default.xml'
-eye_cascade_path = './data/haarcascades/haarcascade_eye.xml'
+        if ew >= standard:             # ewが基準値より小さければewを計算に使用
+            for i in ew_Sample:          # ewとの差の絶対値を格納
+                value_Abs.insert(value_abs_cnt, abs(i - ew))
+                value_abs_cnt += 1
 
-# カスケード分類器の読み込み
-face_cascade = cv2.CascadeClassifier(fase_cascade_path)
-eye_cascade = cv2.CascadeClassifier(eye_cascade_path)
+            valuesAbs_sorted = sorted(value_Abs)        # 絶対値の値たちを昇順にソートして格納
 
-# Webカメラの準備（引数でカメラ指定、0は内臓カメラ）
-cap = cv2.VideoCapture(0)
+            value_abs_cnt = 0
+            for i in value_Abs:         # ewに一番近い値（絶対値）の要素番号を見つける
+                if i == valuesAbs_sorted[0]:
+                    break
+                value_abs_cnt += 1
 
-FRAME_LINESIZE = 2       # 顔に四角を描画する際の線の太さ
-FRAME_RGB_G = (0, 255, 0)  # 四角形を描画する際の色を格納(緑)
-FRAME_RGB_B = (255, 0, 0)  # 四角形を描画する際の色を格納(青)
-mode_cnt = 0     # カウントの際に使用
-text_change = 0  # cmの表記を画面上部に固定にするか、顔に追従するかの切り替え
-fw = 100    # 顔の大きさの初期値（起動時エラー回避のため初期値設定face_width）
-fx = 100    # 顔のx座標の初期値face_x
-fy = 100    # 顔のy座標の初期値face_y
-ew = 100    # 目の大きさの初期値eyes_width
-ex = 100    # 目のx座標の初期値eyes_x
-ey = 100    # 目のy座標の初期値eyes_y
-dis_ans = 0  # 計測した距離を格納distance_answer
-fw_cnt = []  # fwを一時的に格納（最頻値を出すために使用）face_width_count
-ew_cnt = []  # ewを一時的に格納（最頻値を出すために使用）eyws_width_count
-MODE = 50  # 最頻値を出すときの要素数（この値を変更することで計測値(cm)の正確性と計測にかかる時間が変化）
-SAMPLE_LEN = [ 10,   15,  20,  30,  40,  50,  60,  70]       # fwSample,ewSampleに対応した顔とカメラとの距離(cm)
-FW_SAMPLE  = [ 999, 999, 999, 999, 431, 348, 292, 253]       # 事前に計測した距離に対応する顔の大きさ
-EW_SAMPLE  = [ 268, 214, 161, 118,  90,  62,  59,  54]       # 事前に計測した距離に対応する目の大きさ
+            if ew > ew_Sample[0]:        # 距離が恐らく10cm以下の場合
+                ans = -1
+            elif ew == ew_Sample[value_abs_cnt]:       # ewとewに最も近い値が等しい場合
+                ans = sample_Len[value_abs_cnt]
+            elif ew > ew_Sample[value_abs_cnt]:        # ewに最も近い値がewよりも小さい場合
+                # ewの大きさの差
+                few_diff = abs(ew_Sample[value_abs_cnt] -
+                               ew_Sample[value_abs_cnt-1])
+                few_chg = abs(sample_Len[value_abs_cnt] - sample_Len[value_abs_cnt-1]
+                              ) / few_diff  # 1cmごとに変化するewの大きさ
+                # ewより小さくて最も近い値からどれだけの差があるか
+                few_chg_diff = abs(ew - ew_Sample[value_abs_cnt-1])
+                # ewより小さくて最も近い値より何cm離れているか
+                few_add = few_chg * few_chg_diff
+                # どれだけ画面から離れているか
+                ans = sample_Len[value_abs_cnt-1] + few_add
+            else:                       # ewに最も近い値がewよりも大きい場合
+                # ewの大きさの差
+                few_diff = abs(ew_Sample[value_abs_cnt] -
+                               ew_Sample[value_abs_cnt+1])
+                few_chg = abs(sample_Len[value_abs_cnt] - sample_Len[value_abs_cnt+1]
+                              ) / few_diff  # ewが1増えるごとに何cm増えるか
+                # ewより大きくて最も近い値からどれだけの差があるか
+                few_chg_diff = abs(ew - ew_Sample[value_abs_cnt])
+                # ewより大きくて最も近い値より何cm離れているか
+                few_add = few_chg * few_chg_diff
+                # どれだけ画面から離れているか
+                ans = sample_Len[value_abs_cnt] + few_add
+        else:       # ewが基準値より大きければfwを計算に使用
 
-# cap = cv2.VideoCapture(0, cv2.CAP_MSMF)
-# cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'))
-# cap.set(cv2.CAP_PROP_FPS, 10)           # カメラFPSを60FPSに設定
-cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)  # カメラ画像の横幅を1280に設定
-cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)  # カメラ画像の縦幅を720に設定
-# print cap.get(cv2.CAP_PROP_FPS)
-# print cap.get(cv2.CAP_PROP_FRAME_WIDTH)
-# print cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
+            for i in fw_Sample:                      # fwとの差の絶対値を格納
+                value_Abs.insert(value_abs_cnt, abs(i - fw))
+                value_abs_cnt += 1
 
-# もしカメラが起動していなかったら終了する
-if cap.isOpened() is False:
-    print("カメラが起動していないため終了しました")
-    sys.exit()
+            valuesAbs_sorted = sorted(value_Abs)    # 絶対値の値たちをソート（昇順）を格納
 
-# 無限ループで読み取った映像に変化を加える（1フレームごとに区切って変化）
-while True:
-    ret, frame = cap.read()
+            value_abs_cnt = 0
+            for i in value_Abs:                     # fwに一番近い値（絶対値）の要素番号を見つける
+                if i == valuesAbs_sorted[0]:
+                    break
+                value_abs_cnt += 1
 
-    # カラーをモノクロ化したキャプチャを代入(グレースケール化)
-    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            if fw < fw_Sample[len(fw_Sample)-1]:  # 距離が恐らく70cm以上の場合
+                ans = -2
+            elif fw == fw_Sample[value_abs_cnt]:       # fwとfwに最も近い値が等しい場合
+                ans = sample_Len[value_abs_cnt]
+            elif fw > fw_Sample[value_abs_cnt]:        # fwに最も近い値がfwよりも小さい場合
+                # fwの大きさの差
+                few_diff = abs(fw_Sample[value_abs_cnt] -
+                               fw_Sample[value_abs_cnt-1])
+                few_chg = abs(sample_Len[value_abs_cnt] - sample_Len[value_abs_cnt-1]
+                              ) / few_diff  # 1cmごとに変化するfwの大きさ
+                # fwより小さくて最も近い値からどれだけの差があるか
+                few_chg_diff = abs(fw - fw_Sample[value_abs_cnt-1])
+                # fwより小さくて最も近い値より何cm離れているか
+                few_add = few_chg * few_chg_diff
+                # どれだけ画面から離れているか
+                ans = sample_Len[value_abs_cnt-1] + few_add
+            else:                           # fwに最も近い値がfwよりも大きい場合
+                # fwの大きさの差
+                few_diff = abs(fw_Sample[value_abs_cnt] -
+                               fw_Sample[value_abs_cnt+1])
+                few_chg = abs(sample_Len[value_abs_cnt] - sample_Len[value_abs_cnt+1]
+                              ) / few_diff  # fwが1増えるごとに何cm増えるか
+                # fwより大きくて最も近い値からどれだけの差があるか
+                few_chg_diff = abs(fw - fw_Sample[value_abs_cnt])
+                # fwより大きくて最も近い値より何cm離れているか
+                few_add = few_chg * few_chg_diff
+                # どれだけ画面から離れているか
+                ans = sample_Len[value_abs_cnt] + few_add
+        return ans
 
-    # 顔の検出
-    faces = face_cascade.detectMultiScale(
-        gray, scaleFactor=1.3, minNeighbors=5)
-    
-    # 目の検出
-    eyes = eye_cascade.detectMultiScale(
-        gray, scaleFactor=1.3, minNeighbors=5)
-    
-    # 顔に四角形(矩形)を描画する
-    # 第1引数   効果を適応する画像
-    # 第2引数   矩形の左上隅の座標
-    # 第3引数   矩形の右下隅の座標
-    # 第4引数   矩形の色
-    # 第5引数   描画する線の太さ（-1以下だと塗りつぶし）
-    for (fx, fy, fw, fh) in faces:
-        cv2.rectangle(frame, (fx, fy), (fx + fw, fy + fh),
-                        FRAME_RGB_G, FRAME_LINESIZE)
-        
-    # 目に四角形(矩形)を描画する
-    for (ex, ey, ew, eh) in eyes:
-        cv2.rectangle(frame, (ex, ey), (ex + ew, ey + eh),
-                        FRAME_RGB_B, FRAME_LINESIZE)
+# カメラで測定---------------------------------------------------------------------------------------------------------
+    def switch_visibility_periodically(self):
+        ret, frame = self.cap.read()
 
-    if mode_cnt < MODE: #もしmode_cntがMODEより小さければfwとewを格納
-        fw_cnt.insert(mode_cnt,fw)
-        ew_cnt.insert(mode_cnt,ew)
-        mode_cnt += 1
-    else:
-        mode_cnt = 0
-        dis_ans = distance(SAMPLE_LEN, FW_SAMPLE, EW_SAMPLE, statistics.mode(fw_cnt), statistics.mode(ew_cnt))
-        if dis_ans == -1:
-            print('10cm以下です!近すぎます!!\n')
-        elif dis_ans == -2:
-            print('70cm以上離れています!!\n')
+        # カラーをモノクロ化したキャプチャを代入(グレースケール化)
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+
+        # 顔の検出
+        faces = self.face_cascade.detectMultiScale(
+            gray, scaleFactor=1.3, minNeighbors=5)
+
+        # 目の検出
+        eyes = self.eye_cascade.detectMultiScale(
+            gray, scaleFactor=1.3, minNeighbors=5)
+
+        # 第1引数   効果を適応する画像
+        # 第2引数   矩形の左上隅の座標
+        # 第3引数   矩形の右下隅の座標
+        # 第4引数   矩形の色
+        # 第5引数   描画する線の太さ（-1以下だと塗りつぶし）
+        # 顔に四角形(矩形)を描画する
+        for (self.fx, self.fy, self.fw, self.fh) in faces:
+            cv2.rectangle(frame, (self.fx, self.fy), (self.fx + self.fw, self.fy + self.fh),
+                          self.FRAME_RGB_G, self.FRAME_LINESIZE)
+
+        # 目に四角形(矩形)を描画する
+        for (self.ex, self.ey, self.ew, self.eh) in eyes:
+            cv2.rectangle(frame, (self.ex, self.ey), (self.ex + self.ew, self.ey + self.eh),
+                          self.FRAME_RGB_B, self.FRAME_LINESIZE)
+
+        if self.mode_cnt < self.MODE:
+            # コマンド
+            print(self.mode_cnt)
+            self.fw_count.insert(self.mode_cnt, self.fw)
+            self.ew_count.insert(self.mode_cnt, self.ew)
+            self.mode_cnt += 1
         else:
-            if dis_ans < 30:
-                print('顔が近いので少し離れてください')
-            print('%.2fcm\n' % dis_ans)    # 小数第２位まで出力
-            
-        fw_cnt = []
-        ew_cnt = []
+            # テスト用
+            self.mode_cnt = 0
+            print(self.mode_cnt)
+            dis_Ans = self.distance(self.SAMPLE_LEN, self.FW_SAMPLE, self.EW_SAMPLE,
+                                    statistics.mode(self.fw_count), statistics.mode(self.ew_count))
+            if dis_Ans == -1:
+                # 警告画面表示
+                self.toggle_visibility_on()
+                self.MODE = 20
+                # コマンドライン
+                print('10cm以下です!近すぎます!!\n')
+            elif dis_Ans == -2:
+                # ぼかしの処理
+                self.toggle_visibility_off()
+                self.MODE = 50
+                print('70cm以上離れています!!\n')
+            else:
+                # 30以下
+                if dis_Ans < 30:
+                    # ぼかしの処理
+                    self.toggle_visibility_on()
+                    self.MODE = 20
+                    # コマンドライン
+                    print('顔が近いので少し離れてください')
+                # 30以上
+                elif dis_Ans >= 30:
+                    # ぼかし
+                    self.toggle_visibility_off()
+                    self.MODE = 50
+                print('%.2fcm\n' % dis_Ans)    # 小数第２位まで出力
 
-    # 画面に距離を表示
-    if dis_ans == -1:
-        cv2.putText(frame,
-                        text="Less than 10 cm! Please stay away!!",    # テキスト(英数字のみ)
-                        org=(0,30),       # 座標
-                        # フォント(デフォルト cv2.FONT_HERSHEY_SIMPLEX)
-                        fontFace=cv2.FONT_HERSHEY_SIMPLEX,
-                        # 文字の縮尺(本来は1.0を設定すればいいが顔の大きさに連動して文字も縮尺を変えるためfwを掛け、微調整で255で割っている)
-                        fontScale=(1.0),
-                        color=(0, 0, 255),  # 文字の色(顔枠と別の色)
-                        thickness=2,        # 文字の太さ
-                        lineType=cv2.LINE_AA)    # アルゴリズムの種類（文字を滑らかにするかどうか,デフォルトはcv2.LINE_8）
-    elif dis_ans == -2:
-                cv2.putText(frame,
-                        text="Over 70 cm! Please come closer!!",    
-                        org=(0,30),       
-                        fontFace=cv2.FONT_HERSHEY_SIMPLEX,
-                        fontScale=(1.0),
-                        color=(0, 0, 255),  
-                        thickness=2,        
-                        lineType=cv2.LINE_AA)    
-    else:
-        if dis_ans < 30 and dis_ans != 0:     # 30cm未満の場合、警告を出す
-            cv2.putText(frame,
-                        text="Less than 30 cm! Please stay away!!",
-                        org=(370,60),       
-                        fontFace=cv2.FONT_HERSHEY_SIMPLEX,
-                        fontScale=(1.0),
-                        color=(0, 0, 255),  
-                        thickness=2,        
-                        lineType=cv2.LINE_AA)   
-        if text_change == 0:     # 現在cmのテキストを頭上に表示する
-            cv2.putText(frame,
-                                text=str(round(dis_ans,2))+"cm",    
-                                org=(fx, fy-6),
-                                fontFace=cv2.FONT_HERSHEY_SIMPLEX,
-                                fontScale=(1.0),
-                                color=(0, 255, 0),  
-                                thickness=2,
-                                lineType=cv2.LINE_AA)   
-        else:                   # 現在cmのテキストを画面上部に固定で表示する
-            cv2.putText(frame,
-                                text=str(round(dis_ans,2))+"cm",
-                                org=(600, 30),
-                                fontFace=cv2.FONT_HERSHEY_SIMPLEX,
-                                fontScale=(1.0),
-                                color=(0, 255, 0),
-                                thickness=2,
-                                lineType=cv2.LINE_AA)
-
-    # 結果を表示
-    # cv2.imshow('gray', gray)
-    cv2.imshow('YourFace', frame)
-
-    # キー入力を10ms待つ
-    # 「Esc」を押すと無限ループから抜けて終了処理に移る
-    key = cv2.waitKey(10)
-    if key == 27:
-        break
-    elif key == ord('0'):       # 「0」を押すと距離が即座に出る
-        dis_ans = distance(SAMPLE_LEN, FW_SAMPLE, EW_SAMPLE, fw, ew)
-        print('%.2fcm\n' % dis_ans)
-    elif key == ord('1'):
-        if text_change == 0:     # 現在cmのテキストを頭上に表示している場合、画面上部に固定化する
-            text_change = 1
-        else :                  # 現在cmのテキストを画面上部に固定化している場合、頭上に表示する
-            text_change = 0
-
-# 終了処理
-# カメラのリソースを開放する
-cap.release()
-# OpenCVのウィンドウをすべて閉じる
-cv2.destroyAllWindows()
+            # カウントのリセット
+            self.fw_count = []
+            self.ew_count = []
+        # self.toggle_visibility()  # 初回実行
+        # 5秒後に1度顔の判定
+        self.root.after(10, self.switch_visibility_periodically)
 
 
-#命名規則PEP8に基づいている
+# メインの表示-------------------------------------------------------------------------------------------------------
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = MyApp(root)
+    root.mainloop()
