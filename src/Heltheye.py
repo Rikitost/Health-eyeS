@@ -8,21 +8,21 @@ import tkinter as tk
 
 
 class MyApp:
+    # メインのformの関数
     def __init__(self, root):
         self.root = root
         self.root.title("注意画面")
 
         # カメラの初期設定と準備
         self.init_camera()
-
-        # 初期設定
+        # 初期値の設定
         self.init_config()
         # GUI構築
         self.build_gui()
-        # 初手は非表示透明度0
+        # 初期は非表示透明度0
         self.toggle_visibility_off()
 
-        # 10秒ごとに最前面と最背面に切り替える処理を開始
+        # 約5秒ごとに最前面と最背面に切り替える処理を開始
         self.switch_visibility_periodically()
 
 # カメラ設定------------------------------------------------------------------------------------------------------
@@ -211,6 +211,7 @@ class MyApp:
 
 # カメラで測定---------------------------------------------------------------------------------------------------------
     def switch_visibility_periodically(self):
+        # カメラで得た情報の取得
         ret, frame = self.cap.read()
 
         # カラーをモノクロ化したキャプチャを代入(グレースケール化)
@@ -239,16 +240,15 @@ class MyApp:
             cv2.rectangle(frame, (self.ex, self.ey), (self.ex + self.ew, self.ey + self.eh),
                           self.FRAME_RGB_B, self.FRAME_LINESIZE)
 
+        # フレームのカウントの判定
         if self.mode_cnt < self.MODE:
-            # コマンド
-            print(self.mode_cnt)
+            # 配列に1フレームごとの画像を格納
             self.fw_count.insert(self.mode_cnt, self.fw)
             self.ew_count.insert(self.mode_cnt, self.ew)
             self.mode_cnt += 1
         else:
-            # テスト用
             self.mode_cnt = 0
-            print(self.mode_cnt)
+            # 距離の計算
             dis_Ans = self.distance(self.SAMPLE_LEN, self.FW_SAMPLE, self.EW_SAMPLE,
                                     statistics.mode(self.fw_count), statistics.mode(self.ew_count))
             if dis_Ans == -1:
