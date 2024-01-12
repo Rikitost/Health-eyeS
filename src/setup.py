@@ -47,8 +47,8 @@ bdist_msi_options = {
 }
 
 setup(
-    name="Heltheye",
-    version="1.3",
+    name="Health-eyeS",
+    version="1.4",
     description="Your application description",
     options={"build_exe": build_exe_options, "bdist_msi": bdist_msi_options},
     executables=[Executable("Heltheye.py",  base=base,
