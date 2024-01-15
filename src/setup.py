@@ -48,11 +48,8 @@ bdist_msi_options = {
 
 setup(
     name="Health-eyeS",
-    version="1.5",
-    description="""
-    このアプリは、内蔵カメラを使用し顔の判定で画面を見せなくするアプリです。
-    その為、他のアプリでカメラを使用する際は設定画面から終了させてご利用ください。
-    """,
+    version="1.6",
+    description="Health-eyeS",
     options={"build_exe": build_exe_options, "bdist_msi": bdist_msi_options},
     executables=[Executable("Heltheye.py",  base=base,
                             shortcut_name="Health-eyeS",)],
