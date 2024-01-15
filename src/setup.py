@@ -24,7 +24,7 @@ shortcut_common_setting = (
     "HEALTHEYESuper",
     "TARGETDIR",
     "[TARGETDIR]Heltheye.exe",
-    None,
+    "path/to/Health_eyeS.ico",
     None,
     None,
     None,
