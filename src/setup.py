@@ -55,7 +55,7 @@ setup(
     """,
     options={"build_exe": build_exe_options, "bdist_msi": bdist_msi_options},
     executables=[Executable("Heltheye.py",  base=base,
-                            shortcut_name="residentApp",)],
+                            shortcut_name="Health-eyeS",)],
 )
 
 # ---------------------------------------------------------------
