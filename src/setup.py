@@ -15,7 +15,7 @@ else:
 
 build_exe_options = {
     "packages": ["data"],  # 依存するパッケージを指定
-    "include_files": ["data/"],  # 参照するフォルダやリソースを指定
+    "include_files": ["data/", "clock_thread_end_flg.py", "end_flg_value.py", "form_lock_flg.py", "limit.txt", "pass_sec_value.py", "password_input.py", "password.txt", "restart_flg.py", "setting_thread_end_flg.py", "setting.py", "tempCodeRunnerFile.py", "time_count_flg.py", "time_count_value.py", "timeset.py"],  # 参照するフォルダやリソースを指定
     "include_msvcr": True,
     "silent": True,
 }
@@ -23,8 +23,8 @@ build_exe_options = {
 shortcut_common_setting = (
     "HEALTHEYESuper",
     "TARGETDIR",
-    "[TARGETDIR]Heltheye.exe",
-    "path/to/Health_eyeS.ico",
+    "[TARGETDIR]HealtheyeS.exe",
+    None,
     None,
     None,
     None,
@@ -51,7 +51,7 @@ setup(
     version="1.6",
     description="Health-eyeS",
     options={"build_exe": build_exe_options, "bdist_msi": bdist_msi_options},
-    executables=[Executable("Heltheye.py",  base=base,
+    executables=[Executable("HealtheyeS.py",  base=base,
                             shortcut_name="Health-eyeS",)],
 )
 

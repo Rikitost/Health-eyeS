@@ -22,16 +22,19 @@ from tkinter import messagebox
 # import timeset
 # import time_limit
 import setting
-#グローバル変数をセット
-import clock_thread_end_flg as gclock_thread_end # 時間計測スレッドの終了フラグ 0:継続 1:終了(flg)
-import setting_thread_end_flg as gsetting_thread_end # 設定画面スレッドの終了フラグ 0:継続 1:終了(flg)
-import form_lock_flg as gformlock # 設定入力画面を操作している間設定選択画面を操作できなくするフラグ 0:解除 1:ロック (flg)
-import end_flg_value as gend # 終了フラグ 0:継続 1:終了(flg)
+# グローバル変数をセット
+# 時間計測スレッドの終了フラグ 0:継続 1:終了(flg)
+import clock_thread_end_flg as gclock_thread_end
+# 設定画面スレッドの終了フラグ 0:継続 1:終了(flg)
+import setting_thread_end_flg as gsetting_thread_end
+# 設定入力画面を操作している間設定選択画面を操作できなくするフラグ 0:解除 1:ロック (flg)
+import form_lock_flg as gformlock
+import end_flg_value as gend  # 終了フラグ 0:継続 1:終了(flg)
 import time_limit_value as glimit   # 制限時間 (val)
 import time_count_value as gtime_cnt    # 時間計測のカウント (val)
 import time_count_flg as gtime_flg  # 計測フラグ 0:時間計測中 1:時間計測終了 (flg)
-import pass_sec_value as gpass_sec # 入力されたパスワード (val)
-import restart_flg as grestart_flg # 再起動フラグ 0:再起動待機 1:再起動 (flg)
+import pass_sec_value as gpass_sec  # 入力されたパスワード (val)
+import restart_flg as grestart_flg  # 再起動フラグ 0:再起動待機 1:再起動 (flg)
 
 import password_input
 # import mosaic
@@ -41,28 +44,36 @@ import password_input
 thread_setting = None
 
 # --------------------------------------------------------------------------------------------------------
+
+
 def global_set():
-    gsetting_thread_end.flg = 0 # 設定画面の終了フラグ 0:継続 1:終了(flg)
-    gformlock.flg = 0 # 設定入力画面を操作している間設定選択画面を操作できなくするフラグ 0:解除 1:ロック (flg)
+    gsetting_thread_end.flg = 0  # 設定画面の終了フラグ 0:継続 1:終了(flg)
+    gformlock.flg = 0  # 設定入力画面を操作している間設定選択画面を操作できなくするフラグ 0:解除 1:ロック (flg)
     gtime_cnt.val = 0   # 時間計測のカウント
     gend.flg = 0        # 終了フラグ 0:継続 1:終了
     gtime_flg.flg = 1   # 計測フラグ 0:時間計測中 1:時間計測終了
     gpass_sec.flg = 0   # パスワードが解かれたか 0:ロック 1:解除 (flg)
     grestart_flg.flg = 0    # 再起動フラグ 0:再起動待機 1:再起動 (flg)
-    
-    
+
+
 # 表示---------------------------------------------------------------------------------------------------------------------
 def toggle_visibility_on():
     # ウィンドウの透明度を設定 (0: 完全透明, 1: 完全不透明)
     root.attributes("-alpha", 0.97)
 # 非表示---------------------------------------------------------------------------------------------------------------------
+
+
 def toggle_visibility_off():
     # ウィンドウの透明度を設定 (0: 完全透明, 1: 完全不透明)
     root.attributes("-alpha", 0)
+
+
 def endroot():
     if gend.flg == 1:
         root.destroy()
-    root.after(100,endroot)
+    root.after(100, endroot)
+
+
 def rootwin():
     global root
     root = tk.Tk()
@@ -85,16 +96,18 @@ def rootwin():
     root.bind("<B1-Motion>", lambda event: "break")
     root.bind("<Configure>", lambda event: "break")
     toggle_visibility_off()
-    root.after(100,endroot)
+    root.after(100, endroot)
     root.mainloop()
 
-#再起動する関数
+# 再起動する関数
+
+
 def restart_app():
     # pass
     global f_limit
     global thread_setting
     while gend.flg == 0:
-    #     # 再起動ボタンを押したら
+        #     # 再起動ボタンを押したら
         if grestart_flg.flg == 1:
             # タイマーのスレッドを終了
             setting.clock_thread_end()
@@ -112,18 +125,19 @@ def restart_app():
             thread_setting.start()
             print("再起動しました")
 
-            #制限時間を更新
-            f = open("src/limit.txt", "r")
+            # 制限時間を更新
+            f = open("limit.txt", "r")
             f_limit = int(f.read())
             f.close()
             print("制限時間:%d" % f_limit)
             grestart_flg.flg = 0
             print("カメラを再起動しています…")
-            
-            #時間計測開始
+
+            # 時間計測開始
             # setting.time_start_click()
 
-            HealtheyeS(mode_cnt, fw_count, ew_count, fw, ew, dis_Ans, text_Change, fx, fy, ex, ey, SAMPLE_LEN, FW_SAMPLE, EW_SAMPLE, MODECOUNT)
+            HealtheyeS(mode_cnt, fw_count, ew_count, fw, ew, dis_Ans, text_Change,
+                       fx, fy, ex, ey, SAMPLE_LEN, FW_SAMPLE, EW_SAMPLE, MODECOUNT)
         # elif gend.flg == 1:
         #     break
 
@@ -155,21 +169,25 @@ def distance(sample_Len, fw_Sample, ew_Sample, fw, ew):
         elif ew == ew_Sample[value_abs_cnt]:       # ewとewに最も近い値が等しい場合
             ans = sample_Len[value_abs_cnt]
         elif ew > ew_Sample[value_abs_cnt]:        # ewに最も近い値がewよりも小さい場合
-            few_diff = abs(ew_Sample[value_abs_cnt] - ew_Sample[value_abs_cnt-1])        # ewの大きさの差
+            few_diff = abs(ew_Sample[value_abs_cnt] -
+                           ew_Sample[value_abs_cnt-1])        # ewの大きさの差
             few_chg = abs(sample_Len[value_abs_cnt] - sample_Len[value_abs_cnt-1]
-                        ) / few_diff  # 1cmごとに変化するewの大きさ
+                          ) / few_diff  # 1cmごとに変化するewの大きさ
             # ewより小さくて最も近い値からどれだけの差があるか
             few_chg_diff = abs(ew - ew_Sample[value_abs_cnt-1])
-            few_add = few_chg * few_chg_diff                               # ewより小さくて最も近い値より何cm離れているか
+            # ewより小さくて最も近い値より何cm離れているか
+            few_add = few_chg * few_chg_diff
             # どれだけ画面から離れているか
             ans = sample_Len[value_abs_cnt-1] + few_add
         else:                       # ewに最も近い値がewよりも大きい場合
-            few_diff = abs(ew_Sample[value_abs_cnt] - ew_Sample[value_abs_cnt+1])        # ewの大きさの差
+            few_diff = abs(ew_Sample[value_abs_cnt] -
+                           ew_Sample[value_abs_cnt+1])        # ewの大きさの差
             few_chg = abs(sample_Len[value_abs_cnt] - sample_Len[value_abs_cnt+1]
-                        ) / few_diff  # ewが1増えるごとに何cm増えるか
+                          ) / few_diff  # ewが1増えるごとに何cm増えるか
             # ewより大きくて最も近い値からどれだけの差があるか
             few_chg_diff = abs(ew - ew_Sample[value_abs_cnt])
-            few_add = few_chg * few_chg_diff                               # ewより大きくて最も近い値より何cm離れているか
+            # ewより大きくて最も近い値より何cm離れているか
+            few_add = few_chg * few_chg_diff
             # どれだけ画面から離れているか
             ans = sample_Len[value_abs_cnt] + few_add
     else:       # ewが基準値より大きければfwを計算に使用
@@ -191,30 +209,36 @@ def distance(sample_Len, fw_Sample, ew_Sample, fw, ew):
         elif fw == fw_Sample[value_abs_cnt]:       # fwとfwに最も近い値が等しい場合
             ans = sample_Len[value_abs_cnt]
         elif fw > fw_Sample[value_abs_cnt]:        # fwに最も近い値がfwよりも小さい場合
-            few_diff = abs(fw_Sample[value_abs_cnt] - fw_Sample[value_abs_cnt-1])        # fwの大きさの差
+            few_diff = abs(fw_Sample[value_abs_cnt] -
+                           fw_Sample[value_abs_cnt-1])        # fwの大きさの差
             few_chg = abs(sample_Len[value_abs_cnt] - sample_Len[value_abs_cnt-1]
-                        ) / few_diff  # 1cmごとに変化するfwの大きさ
+                          ) / few_diff  # 1cmごとに変化するfwの大きさ
             # fwより小さくて最も近い値からどれだけの差があるか
             few_chg_diff = abs(fw - fw_Sample[value_abs_cnt-1])
-            few_add = few_chg * few_chg_diff                               # fwより小さくて最も近い値より何cm離れているか
+            # fwより小さくて最も近い値より何cm離れているか
+            few_add = few_chg * few_chg_diff
             # どれだけ画面から離れているか
             ans = sample_Len[value_abs_cnt-1] + few_add
         else:                           # fwに最も近い値がfwよりも大きい場合
-            few_diff = abs(fw_Sample[value_abs_cnt] - fw_Sample[value_abs_cnt+1])        # fwの大きさの差
+            few_diff = abs(fw_Sample[value_abs_cnt] -
+                           fw_Sample[value_abs_cnt+1])        # fwの大きさの差
             few_chg = abs(sample_Len[value_abs_cnt] - sample_Len[value_abs_cnt+1]
-                        ) / few_diff  # fwが1増えるごとに何cm増えるか
+                          ) / few_diff  # fwが1増えるごとに何cm増えるか
             # fwより大きくて最も近い値からどれだけの差があるか
             few_chg_diff = abs(fw - fw_Sample[value_abs_cnt])
-            few_add = few_chg * few_chg_diff                               # fwより大きくて最も近い値より何cm離れているか
+            # fwより大きくて最も近い値より何cm離れているか
+            few_add = few_chg * few_chg_diff
             # どれだけ画面から離れているか
             ans = sample_Len[value_abs_cnt] + few_add
     return ans
 
 # 無限ループで読み取った映像に変化を加える（1フレームごとに区切って変化）
 # count = 0
+
+
 def HealtheyeS(mode_cnt, fw_count, ew_count, fw, ew, dis_Ans, textChange, fx, fy, ex, ey, sampleLen, fwSample, ewSample, MODE):
     printcnt = 0
-    f = open('src/limit.txt', 'r')
+    f = open('limit.txt', 'r')
     f_limit = int(f.read())
     f.close()
     print("制限時間:%d" % f_limit)
@@ -227,9 +251,9 @@ def HealtheyeS(mode_cnt, fw_count, ew_count, fw, ew, dis_Ans, textChange, fx, fy
             printcnt = 0
         else:
             printcnt += 1
-        
+
         time.sleep(0.1)
-        
+
         if gend.flg == 1:
             return  # 終了フラグが立っていたら処理を終了する
         # if gend.flg == 1:
@@ -254,7 +278,7 @@ def HealtheyeS(mode_cnt, fw_count, ew_count, fw, ew, dis_Ans, textChange, fx, fy
         eyes = eye_cascade.detectMultiScale(
             gray, scaleFactor=1.3, minNeighbors=5)
 
-    #デバック-------------------------------------------------
+    # デバック-------------------------------------------------
         # # 第1引数   効果を適応する画像
         # # 第2引数   矩形の左上隅の座標
         # # 第3引数   矩形の右下隅の座標
@@ -277,8 +301,8 @@ def HealtheyeS(mode_cnt, fw_count, ew_count, fw, ew, dis_Ans, textChange, fx, fy
         else:
             mode_cnt = 0
             dis_Ans = distance(sampleLen, fwSample, ewSample,
-                            statistics.mode(fw_count), statistics.mode(ew_count))
-                # 制限時間が過ぎているならパス
+                               statistics.mode(fw_count), statistics.mode(ew_count))
+            # 制限時間が過ぎているならパス
             if f_limit <= gtime_cnt.val:
                 pass
             # 距離によって表示を変える
@@ -332,9 +356,9 @@ def HealtheyeS(mode_cnt, fw_count, ew_count, fw, ew, dis_Ans, textChange, fx, fy
         #         textChange = 1
         #     else:                  # 現在cmのテキストを画面上部に固定化している場合、頭上に表示する
         #         textChange = 0
-    #time_limitの変更箇所-----------------------------------------
+    # time_limitの変更箇所-----------------------------------------
 
-        #制限時間を超えたらパスワード入力画面を表示
+        # 制限時間を超えたらパスワード入力画面を表示
         # if f_limit <= gtime_cnt.val:
         if gtime_flg.flg == 0:
             # f = open('src/limit.txt', 'r')
@@ -343,34 +367,36 @@ def HealtheyeS(mode_cnt, fw_count, ew_count, fw, ew, dis_Ans, textChange, fx, fy
             if f_limit <= gtime_cnt.val:
                 gtime_flg.flg = 1
                 # gtime_cnt.val = 0
-                #print("timeflg:%d" % gtime_flg.flg)
+                # print("timeflg:%d" % gtime_flg.flg)
                 # thread2 = threading.Thread(target=password_input.passbox)
                 # thread2.start()
                 # mosaic()
                 # password_input.passbox()
                 toggle_visibility_on()
                 print("画面を覆う")
-                #メッセージを表示
+                # メッセージを表示
                 # messagebox.showinfo('時間制限','制限時間を超えました')
-                
-                thread_passbox = threading.Thread(target=password_input.passbox_tk)
+
+                thread_passbox = threading.Thread(
+                    target=password_input.passbox_tk)
                 thread_passbox.start()
                 # password_input.passbox_tk()
-                
+
                 print("モザイクとパスワードを出す")
-        
+
         if gpass_sec.flg == 1:
             thread_passbox.join()
             print("thread_passboxを終了しました")
             toggle_visibility_off()
             grestart_flg.flg = 1
             gpass_sec.flg = 0
-        
+
         if gend.flg == 1:
             break
         # if gpass_sec.flg == 1:
         #     pass
         # print("end:%d" % gend.flg)
+
 
 def build_gui():
     # GUIの構築をここに記述
@@ -387,12 +413,12 @@ global f_limit
 global f_password
 global_set()
 # 現パスワードを読み込む
-fp = open("src/password.txt", "r")
+fp = open("password.txt", "r")
 fp_password = fp.read()
 fp.close()
 print("初期設定のパスワード:%s" % fp_password)
 # 現制限時間を読み込む
-f = open("src/limit.txt", "r")
+f = open("limit.txt", "r")
 f_limit = int(f.read())
 f.close()
 print("初期設定の制限時間:%d" % f_limit)
@@ -443,22 +469,25 @@ ew_count = []  # ewを一時的に格納（最頻値を出すために使用）
 MODECOUNT = 50  # 最頻値を出すときの要素数（この値を変更することで計測値(cm)の正確性と計測にかかる時間が変化）
 # fwSample,ewSampleに対応した顔とカメラとの距離(cm)
 SAMPLE_LEN = [10,   15,  20,  30,  40,  50,  60,  70]
-FW_SAMPLE = [999, 999, 999, 999, 431, 348, 292, 253]       # 事前に計測した距離に対応する顔の大きさ
-EW_SAMPLE = [268, 214, 161, 118,  90,  62,  59,  54]       # 事前に計測した距離に対応する目の大きさ
+FW_SAMPLE = [999, 999, 999, 999, 431, 348,
+             292, 253]       # 事前に計測した距離に対応する顔の大きさ
+EW_SAMPLE = [268, 214, 161, 118,  90,  62,
+             59,  54]       # 事前に計測した距離に対応する目の大きさ
 # -------------------------------------------------------------------------------
 
 
-#時間計測開始
+# 時間計測開始
 setting.time_start_click()
 
 print("カメラを起動")
-thread_camera = threading.Thread(target=HealtheyeS, args=(mode_cnt, fw_count, ew_count, fw, ew, dis_Ans, text_Change, fx, fy, ex, ey, SAMPLE_LEN, FW_SAMPLE, EW_SAMPLE, MODECOUNT))
+thread_camera = threading.Thread(target=HealtheyeS, args=(mode_cnt, fw_count, ew_count, fw,
+                                 ew, dis_Ans, text_Change, fx, fy, ex, ey, SAMPLE_LEN, FW_SAMPLE, EW_SAMPLE, MODECOUNT))
 thread_camera.start()
 # HealtheyeS(mode_cnt, fw_count, ew_count, fw, ew, dis_Ans, text_Change, fx, fy, ex, ey, SAMPLE_LEN, FW_SAMPLE, EW_SAMPLE, MODECOUNT)
 print("カメラを起動しました")
 
 
-#終了フラグまたは再起動フラグが立ったら終了
+# 終了フラグまたは再起動フラグが立ったら終了
 # if gend.flg == 1 or grestart_flg.flg == 1:
 #     print("thread_cameraを終了します")
 #     thread_camera.join()
@@ -471,18 +500,17 @@ print("カメラを起動しました")
 #     print("カメラが終了しました")
 
 #     print("終了します")
-    
+
 restart_app()
 if gend.flg == 1:
     print("thread_cameraを終了します")
     thread_camera.join()
     print("thread_cameraを終了待ち")
-    
+
     # print("カメラを終了します")
     # # カメラのリソースを開放する
     # cap.release()
     # print("カメラが終了しました")
-    
 
     print("カメラを終了します")
     # カメラのリソースを開放する
@@ -491,7 +519,6 @@ if gend.flg == 1:
     print("cv2.destroyAllWindows()を実行します")
     cv2.destroyAllWindows()
     print("cv2.destroyAllWindows()を実行しました")
-    
 
     print("thread_appを終了します")
     thread_app.join()
