@@ -43,7 +43,7 @@ msi_data = {"Shortcut": shortcut_table}
 bdist_msi_options = {
     'data': msi_data,
     # 任意の UUID を生成して設定
-    'upgrade_code': '{D804AC21-4F20-454B-8752-950DC4E4B9D8}',
+    'upgrade_code': '{8E1291B3-4B4F-4188-8980-AE9C97FC77CC}',
 }
 
 setup(
