@@ -62,10 +62,11 @@ def toggle_visibility_off():
     root.attributes("-alpha", 0)
 
 
-def endroot():
-    if gend.flg == 1:
-        root.destroy()
-    root.after(100, endroot)
+# def endroot():
+#     if gend.flg == 1:
+#         root.destroy()
+#     else:
+#         root.after(100, endroot)
 
 
 def rootwin():
@@ -90,7 +91,8 @@ def rootwin():
     root.bind("<B1-Motion>", lambda event: "break")
     root.bind("<Configure>", lambda event: "break")
     toggle_visibility_off()
-    root.after(100, endroot)
+    if gend.flg == 1:
+        root.destroy()
     root.mainloop()
 
 # 再起動する関数
