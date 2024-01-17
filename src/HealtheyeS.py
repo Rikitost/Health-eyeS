@@ -83,9 +83,9 @@ def rootwin():
     # 画面全体
     root.attributes("-fullscreen", True)
     # タスクバー
-    # root.overrideredirect(True)
+    root.overrideredirect(True)
     # 最前面
-    # root.attributes("-topmost", True)
+    root.attributes("-topmost", True)
     # ウィンドウ移動、サイズ変更の無効
     root.bind("<B1-Motion>", lambda event: "break")
     root.bind("<Configure>", lambda event: "break")
