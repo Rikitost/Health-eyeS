@@ -3,6 +3,7 @@ import customtkinter as ctk
 import timeset
 import threading
 
+# import HealtheyeS
 
 # グローバル変数をセット
 # 設定入力画面を操作している間設定選択画面を操作できなくするフラグ 0:解除 1:ロック (flg)
@@ -21,14 +22,11 @@ def global_set():
 def click_close():
     pass
 
-# フォームのロック
-
 
 def formlock_on():
     gformlock.flg = 1
 
 
-# フォーム解除
 def formlock_off():
     gformlock.flg = 0
 
@@ -49,8 +47,10 @@ def pass_open():
         input_pass = passset_text.get()
 
         # password.txtを読み込んでパスワードを取得
-        f = open('src/password.txt', 'r')
+        f = open('password.txt', 'r')
         password = f.read()
+        # print(password)
+        # print(input_pass)
         # パスワードが設定されていない場合スキップする
         if password == "":
             f.close()
@@ -68,9 +68,10 @@ def pass_open():
                     gpass_sec.flg = 1
                     formlock_off()
                     # HealtheyeS.toggle_visibility_off()
-                    passbox_form.quit()
-                    passbox_form.destroy()
+
+                    # passbox_form.destroy()
                     print("パスワードが一致しました")
+                    passbox_form.quit()
 
                     # passbox_form.destroy()
                 else:
@@ -100,7 +101,7 @@ def passbox_tk():
     passbox_form.geometry("350x250")
     passbox_form.title("パスワード入力")
     # 常に最前面に表示
-    passbox_form.attributes("-topmost", True)
+    # passbox_form.attributes("-topmost", True)
 
     # #×で閉じられないようにする
     passbox_form.protocol("WM_DELETE_WINDOW", click_close)
@@ -116,11 +117,17 @@ def passbox_tk():
     passset_text = ctk.CTkEntry(master=passbox_frame, validate="key", validatecommand=(
         validation_pass, '%d', '%i', '%P', '%s', '%S', '%v', '%V', '%W'), placeholder_text="半角数字4桁", show="*")
     passset_text.pack(pady=12, padx=10)
+    # パスワード入力のテキストボックス
+    # passset_text = tk.Entry(passbox_form, validate="key", validatecommand=(
+    #     validation_pass, '%d', '%i', '%P', '%s', '%S', '%v', '%V', '%W'))
+    # passset_text.pack()
 
     warning_pass_label = tk.Label(passbox_form, text='')
     warning_pass_label.pack()
 
-    # 決定のボタン
+    # 入力決定のボタン
+    # timeset_button = ctk.CTkButton(master=passbox_frame,text='決定',command=lambda: pass_open())
+    # timeset_button.pack(pady=12,padx=10)
     timeset_button = ctk.CTkButton(
         passbox_frame,
         text='決定',
@@ -129,11 +136,21 @@ def passbox_tk():
     timeset_button.pack(pady=12, padx=10)
 
     passbox_form.mainloop()
+    # del passbox_form
 
+
+# def passbox():
+
+
+#     passbox_tk()
+
+#     # フォームの生成
+#     thread_passbox = threading.Thread(target=passbox_tk)
+#     thread_passbox.start()
 
 if __name__ == '__main__':
     global_set()
-    f = open('src/password.txt', 'r')
+    f = open('password.txt', 'r')
     password = f.read()
     f.close()
     passbox_tk()

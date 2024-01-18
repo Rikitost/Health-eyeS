@@ -1,2 +1,2 @@
 
-    printcnt = 0
+    global visibility_flg
