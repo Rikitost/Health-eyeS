@@ -59,7 +59,7 @@ def global_set():
 def time_start_click():
     global thread_time_start
     if gformlock.flg == 0:
-        f = open('src/limit.txt', 'r')
+        f = open('limit.txt', 'r')
         f_limit = int(f.read())
         f.close()
         # 制限時間を過ぎたとき(設定した時間を過ぎているなら)
@@ -110,7 +110,7 @@ def clock():
     # 制限時間を過ぎたとき
     if gtime_cnt.val >= f_limit:
         # パスワードを再取得
-        fp = open('src/password.txt', 'r')
+        fp = open('password.txt', 'r')
         f_password = fp.read()
         fp.close()
         # 時間計測終了
@@ -161,7 +161,7 @@ def setting_end():
     global gpass_windowup
     if gformlock.flg == 0:
         # パスワードを再取得
-        fp = open('src/password.txt', 'r')
+        fp = open('password.txt', 'r')
         f_password = fp.read()
         fp.close()
         # パスワードを設定していないなら
@@ -260,7 +260,7 @@ def setting():
         password = password_entry.get()
         print(password)
         # パスワードをpassword.txtに保存
-        f = open('src/password.txt', 'w')
+        f = open('password.txt', 'w')
         f.write(str(password))
         f.close()
         # 空白なら警告
@@ -286,7 +286,7 @@ def setting():
             # 秒
             # limit_minut = int(limit)
             # 制限時間をlimit.txtに保存
-            f = open('src/limit.txt', 'w')
+            f = open('limit.txt', 'w')
             f.write(str(limit_minut))
             f.close()
             # メッセージを表示
@@ -317,11 +317,11 @@ def setting():
 
     gsetting_thread_end.flg = 0
 
-    f = open('src/limit.txt', 'r')
+    f = open('limit.txt', 'r')
     f_limit = int(f.read())
     f.close()
 
-    fp = open('src/password.txt', 'r')
+    fp = open('password.txt', 'r')
     f_password = fp.read()
     fp.close()
 
@@ -446,23 +446,3 @@ def clock_thread_end():
 if __name__ == '__main__':
     global_set()
     setting()
-    # thread_time_start.join()
-    # thread1 = threading.Thread(target=setting)
-    # thread1.start()
-    # 終了フラグが立つまでループ(再起動用のループ)
-    # while gend.flg == 0:
-    #     # 再起動ボタンを押したら
-    #     if grestart_flg.flg == 1:
-    #         # 設定画面のスレッドを終了
-    #         thread_time_start.join()
-    #         print("thread_time_startを終了しました")
-    #         # thread1.join()
-    #         grestart_flg.flg = 0
-    #         print("再起動します")
-    #         gsetting_thread_end.flg = 1
-    #     # スレッドを終了してから再起動
-    #     if gsetting_thread_end.flg == 1:
-    #         globalfile_reset()
-    #         # thread1 = threading.Thread(target=setting)
-    #         # thread1.start()
-    #         print("再起動しました")

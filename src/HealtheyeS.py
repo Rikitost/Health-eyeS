@@ -5,10 +5,6 @@
 # キー入力「Esc」で終了
 # 画面サイズ1280,720で計測
 
-# 追加行大体 importでファイルtimesetを追加
-# 148
-# 194から203ぐらい
-
 # import
 import cv2
 import sys
@@ -203,7 +199,7 @@ def restart_app():
             print("再起動しました")
 
             #制限時間を更新
-            f = open("src/limit.txt", "r")
+            f = open("limit.txt", "r")
             f_limit = int(f.read())
             f.close()
             print("制限時間:%d" % f_limit)
@@ -308,7 +304,7 @@ def HealtheyeS(mode_cnt, fw_count, ew_count, fw, ew, dis_Ans, textChange, fx, fy
     global visibility_flg
     global gpass_windowup
     printcnt = 0
-    f = open('src/limit.txt', 'r')
+    f = open('limit.txt', 'r')
     f_limit = int(f.read())
     f.close()
     print("制限時間:%d" % f_limit)
@@ -420,13 +416,6 @@ def HealtheyeS(mode_cnt, fw_count, ew_count, fw, ew, dis_Ans, textChange, fx, fy
             # f.close()
             if f_limit <= gtime_cnt.val:
                 gtime_flg.flg = 1
-                # gtime_cnt.val = 0
-                #print("timeflg:%d" % gtime_flg.flg)
-                # thread2 = threading.Thread(target=password_input.passbox)
-                # thread2.start()
-                # mosaic()
-                # password_input.passbox()
-                
                 visibility_flg = 1
                 # toggle_visibility_on()
                 root.focus_force()
@@ -479,12 +468,12 @@ global_set()
 visibility_flg = 0
 newend_flg = 0
 # 現パスワードを読み込む
-fp = open("src/password.txt", "r")
+fp = open("password.txt", "r")
 fp_password = fp.read()
 fp.close()
 print("初期設定のパスワード:%s" % fp_password)
 # 現制限時間を読み込む
-f = open("src/limit.txt", "r")
+f = open("limit.txt", "r")
 f_limit = int(f.read())
 f.close()
 print("初期設定の制限時間:%d" % f_limit)
@@ -549,21 +538,6 @@ thread_camera.start()
 # HealtheyeS(mode_cnt, fw_count, ew_count, fw, ew, dis_Ans, text_Change, fx, fy, ex, ey, SAMPLE_LEN, FW_SAMPLE, EW_SAMPLE, MODECOUNT)
 print("カメラを起動しました")
 
-
-#終了フラグまたは再起動フラグが立ったら終了
-# if gend.flg == 1 or grestart_flg.flg == 1:
-#     print("thread_cameraを終了します")
-#     thread_camera.join()
-#     print("thread_cameraを終了しました")
-
-#     print("カメラを終了します")
-#     # カメラのリソースを開放する
-#     cap.release()
-#     cv2.destroyAllWindows()
-#     print("カメラが終了しました")
-
-#     print("終了します")
-    
 restart_app()
 if newend_flg == 1:
     print("thread_cameraを終了します")
@@ -585,28 +559,6 @@ if newend_flg == 1:
     print("cv2.destroyAllWindows()を実行しました")
     
 
-    # print("thread_appを終了します")
-    # thread_app.join()
-    # print("thread_appを終了しました")
-    # OpenCVのウィンドウをすべて閉じる
-    # print("rootを終了します")
-    # root.quit()
-    # print("rootを終了しました")
-
-    # password_input.passbox_end()
     print("正常に終了しました")
     sys.exit()
-# ------------------------------------------------------------------------------------------------------------------------
-# -----------------------------------------------------------
-# print("関数終了処理-------------------------------------------")
-# gtime_flg.flg = 1
-# # thread_setting.join()
-# print("thread_settingを終了しました")
-# print("Healtheyes-Super終了処理-------------------------------")
-# # # カメラのリソースを開放する
-# # cap.release()
-# # OpenCVのウィンドウをすべて閉じる
-# cv2.destroyAllWindows()
-# print("カメラが終了しました")
-# # password_input.passbox_end()
-# print("正常に終了しました")
+
