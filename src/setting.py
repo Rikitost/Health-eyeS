@@ -271,9 +271,9 @@ def setting():
             return
         else:
             # 分
-            # limit_minut = int(limit) * 60
+            limit_minut = int(limit) * 60
             # 秒
-            limit_minut = int(limit)
+            # limit_minut = int(limit)
             # 制限時間をlimit.txtに保存
             f = open('limit.txt', 'w')
             f.write(str(limit_minut))
