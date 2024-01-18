@@ -1,0 +1,2 @@
+
+    global visibility_flg
