@@ -31,8 +31,6 @@ import restart_flg as grestart_flg # 再起動フラグ 0:再起動待機 1:再�
 import password_windowup_flg as gpass_windowup # パスワード入力画面を表示する
 
 import password_input
-# import mosaic
-# import refreshfream
 
 # 初期値を None に設定
 # thread_setting = None
