@@ -36,7 +36,7 @@ def pass_open():
         input_pass = passset_text.get()
 
         # password.txtを読み込んでパスワードを取得
-        f = open('src/password.txt', 'r')
+        f = open('password.txt', 'r')
         password = f.read()
         # パスワードが設定されていない場合スキップする
         if password == "":
@@ -116,7 +116,7 @@ def passbox_tk():
 
 if __name__ == '__main__':
     global_set()
-    f = open('src/password.txt', 'r')
+    f = open('password.txt', 'r')
     password = f.read()
     f.close()
     passbox_tk()

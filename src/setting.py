@@ -26,7 +26,7 @@ def setting_end():
     # global gpass_windowup
     # if gformlock.flg == 0:
     # パスワードを再取得
-    fp = open('src/password.txt', 'r')
+    fp = open('password.txt', 'r')
     f_password = fp.read()
     fp.close()
     # パスワードを設定していないなら
@@ -47,14 +47,13 @@ def setting_end():
         # pass入力のformがすでに開かれているかの判定
         if pass_form == 0:
             pass_form = 1
-            # フォーム内のボタンを無効にする
+            # パスワード画面を開いた時に設定を操作できなくする
             for widget in setting_form.winfo_children():
                 if isinstance(widget, ctk.CTkButton):
                     widget.configure(state=tk.DISABLED)
             # setting_form.configure(state=ctk.DISABLED)
             # パスワードのformを開く
             password_input.passbox_tk()
-            # パスワード画面を開いた時に設定を操作できなくする
 
         # print(gpass_sec.flg)
             if gpass_sec.flg == 1:
@@ -188,11 +187,11 @@ def setting():
 
     # gsetting_thread_end.flg = 0
 
-    f = open('src/limit.txt', 'r')
+    f = open('limit.txt', 'r')
     f_limit = int(f.read())
     f.close()
 
-    fp = open('src/password.txt', 'r')
+    fp = open('password.txt', 'r')
     f_password = fp.read()
     fp.close()
 
