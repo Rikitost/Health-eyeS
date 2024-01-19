@@ -2,11 +2,12 @@ import customtkinter as ctk
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
-import threading
-import time
+
 # ファイルをインポート
 import password_input
 # グローバル変数
+import end_flg_value as gend  # 終了フラグ 0:継続 1:終了(flg)
+import pass_sec_value as gpass_sec  # パスワードが解かれたか 0:ロック 1:解除 (flg)
 
 
 # 数値のみ入力を受け付ける処理
@@ -15,41 +16,57 @@ def on_validate(d, i, P, s, S, v, V, W):
     return (P.isdigit() and len(P) <= 4) or P == ""
 
 
-# パスワード
+# パスワード入力で閉じる
 def setting_end():
+    # passのフラグ
+    global pass_form
+    global setting_form
     print("終了")
-    # global setting_form
     # global gend
     # global gpass_windowup
     # if gformlock.flg == 0:
-    #     # パスワードを再取得
-    #     fp = open('src/password.txt', 'r')
-    #     f_password = fp.read()
-    #     fp.close()
-    #     # パスワードを設定していないなら
-    #     if f_password == "":
-    #         print("パスワード認証をスキップ")
-    #         gend.flg = 1  # 終了フラグを立てる
-    #         print("パスワードフラグ：%d" % gpass_sec.flg)
-    #         setting_form.quit()
-    #         print("設定のウインドウを閉じました")
-    #         # print("setting endflg:%d" % gend.flg)
-    #         thread_time_start.join()
-    #         print("thread_time_startを閉じました")
+    # パスワードを再取得
+    fp = open('src/password.txt', 'r')
+    f_password = fp.read()
+    fp.close()
+    # パスワードを設定していないなら
+    if f_password == "":
+        print("パスワード認証をスキップ")
+        gend.flg = 1  # 終了フラグを立てる
+        # print("パスワードフラグ：%d" % gpass_sec.flg)
+        # formの削除
+        setting_form.quit()
+        print("設定のウインドウを閉じました")
+        # print("setting endflg:%d" % gend.flg)
+        # thread_time_start.join()
+        print("thread_time_startを閉じました")
 
     #         # setting_form.destroy()
-    #     else:
-    #         # print(gpass_sec.flg)
-    #         password_input.passbox_tk()
-    #         print(gpass_sec.flg)
-    #     if gpass_sec.flg == 1:
-    #         gend.flg = 1  # 終了フラグを立てる
-    #         thread_time_start.join()
-    #         print("thread_time_startを閉じました")
-    #         print("おわりフラグ：%d" % gend.flg)
-    #         setting_form.quit()
-    #         print("設定のウインドウを閉じました")
-    #         gsetting_thread_end.flg = 1
+    else:
+        # print(gpass_sec.flg)
+        # pass入力のformがすでに開かれているかの判定
+        if pass_form == 0:
+            pass_form = 1
+            # フォーム内のボタンを無効にする
+            for widget in setting_form.winfo_children():
+                if isinstance(widget, ctk.CTkButton):
+                    widget.configure(state=tk.DISABLED)
+            # setting_form.configure(state=ctk.DISABLED)
+            # パスワードのformを開く
+            password_input.passbox_tk()
+            # パスワード画面を開いた時に設定を操作できなくする
+
+        # print(gpass_sec.flg)
+            if gpass_sec.flg == 1:
+                gend.flg = 1  # 終了フラグを立てる
+                # thread_time_start.join()
+                # print("thread_time_startを閉じました")
+                # print("おわりフラグ：%d" % gend.flg)
+                setting_form.quit()
+                print("設定のウインドウを閉じました")
+                # gsetting_thread_end.flg = 1
+            else:
+                print("解除できていないようだ")
 
     # setting_form.destroy()
 
@@ -58,43 +75,15 @@ def setting_end():
 def label_update():
     global limit_label
     global nokoritime
-
-    # # 終わりのフラグ判定(計測中)
-    # if gformlock.flg == 0:
-    #     # 時間の読み込み
-    #     f = open('src/limit.txt', 'r')
-    #     f_limit = int(f.read())
-    #     f.close()
-    #     # 制限時間を過ぎたとき(設定した時間を過ぎているなら)
-    #     if gtime_cnt.val >= f_limit:
-    #         messagebox.showinfo('警告', '制限時間を過ぎています')
-    # # 計測終了(1)
-    # else:
-    #     if gtime_flg.flg == 1:
-    #         gtime_flg.flg = 0  # 計測する
-    #         if gtime_flg.flg == 0 and gend.flg == 0:
-    #             # 制限時間を過ぎたとき
-    #             if gtime_cnt.val >= f_limit:
-    #                 gtime_flg.flg = 1
-    #             gtime_cnt.val += 1
-
-    #         # 制限時間を過ぎたとき
-    #         if gtime_cnt.val >= f_limit:
-    #             # パスワードを再取得
-    #             fp = open('src/password.txt', 'r')
-    #             f_password = fp.read()
-    #             fp.close()
-
-    #             print("時間計測を終了しました")
-    #             if f_password == "":
-    #                 print("パスワード認証をスキップ")
-    #         else:
-    #             print("計測停止")
+    global pass_form
     # 経過時間ラベルの更新
     # 経過時間ラベルの更新
     # limitlablがないときの例外処理
     if nokoritime <= 0:
-        nokoritime = 0
+        if pass_form == 0:
+            # パスワードを入力させて終わる
+            setting_end()
+        # nokoritime = 0
     else:
         nokoritime -= 1
     try:
@@ -107,12 +96,14 @@ def label_update():
 
 
 def setting():
-    # form,ラベル時間,ファイルに入力された時間,パスワード,残り時間
+    # form,ラベル時間,ファイルに入力された時間,パスワード,残り時間,フォームが複数開かないようするflg
     global setting_form
     global limit_label
     global f_limit
     global f_password
     global nokoritime
+    global pass_form
+    pass_form = 0
 
 
 # ボタンクリック関連の関数------------------------------------------------------------
@@ -175,7 +166,8 @@ def setting():
 # 再起動
 
     def app_restart_click():
-        print("×クリック")
+        print("再起動")
+
         # if gformlock.flg == 0:
         #     grestart_flg.flg = 1
         # # print("thread_time_startを終了しました")
@@ -187,9 +179,9 @@ def setting():
     # ウインドウの×を押したときの処理（タイマーを止めてからウインドウを閉じる）
 
     def delete_window():
-        time_stop_click()
-        gend.flg = 1
-        setting_form.destroy()
+        # パスワードを入力させて終わる
+        setting_end()
+
 
 # ----------------------------------------------------------------------------------
     # global setting_end_flg
@@ -299,8 +291,6 @@ def setting():
         setting_form, text='アプリを終了', command=lambda: setting_end(), fg_color='red')
     # button_exit = ctk.CTkButton(setting_form, text='アプリを終了', command=lambda:setting_end(),fg_color='red')
     button_exit.grid(row=12, column=0, pady=6, padx=5, sticky='e')
-
-    # setting_form.after(1000,restart_after)
 
     # 配置配置配置配置配置配置配置配置配置配置配置配置配置配置配置配置
     # パスワード設定ラベル
