@@ -5,8 +5,6 @@ import threading
 
 
 # グローバル変数をセット
-# 設定入力画面を操作している間設定選択画面を操作できなくするフラグ 0:解除 1:ロック (flg)
-import form_lock_flg as gformlock
 import pass_sec_value as gpass_sec  # パスワードが解かれたか 0:ロック 1:解除 (flg)
 import end_flg_value as gend        # 終了フラグ 0:継続 1:終了(flg)
 # パスワード入力画面が閉じられたか 0:閉じられていない 1:閉じられた(flg)
@@ -20,17 +18,6 @@ def global_set():
 
 def click_close():
     pass
-
-# フォームのロック
-
-
-def formlock_on():
-    gformlock.flg = 1
-
-
-# フォーム解除
-def formlock_off():
-    gformlock.flg = 0
 
 
 def passbox_end():
@@ -55,7 +42,6 @@ def pass_open():
         if password == "":
             f.close()
             gpass_sec.flg = 1
-            formlock_off()
             passbox_form.quit()
             passbox_form.destroy()
         else:
@@ -66,7 +52,6 @@ def pass_open():
                 # パスワードが一致したら終了
                 if int(input_pass) == password:
                     gpass_sec.flg = 1
-                    formlock_off()
                     # HealtheyeS.toggle_visibility_off()
                     passbox_form.quit()
                     passbox_form.destroy()
@@ -94,8 +79,6 @@ def passbox_tk():
     # Selecting color theme - blue, green, dark-blue
     ctk.set_default_color_theme("blue")
 
-    # パスワード入力画面を操作している間設定画面を操作できなくする
-    formlock_on()
     passbox_form = ctk.CTk()
     passbox_form.geometry("350x250")
     passbox_form.title("パスワード入力")
