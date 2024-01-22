@@ -154,7 +154,7 @@ def rootwin():
     root.mainloop()
 
 
-def HealtheyeS(mode_cnt, fw_count, ew_count, fw, ew, dis_Ans, text_Change, fx, fy, ex, ey, sampleLen, fwSample, ewSample, MODE):
+def HealtheyeS(mode_cnt, fw_count, ew_count, fw, ew, dis_Ans, textChange, fx, fy, ex, ey, sampleLen, fwSample, ewSample, MODE):
     def focus():
         print("ふぉーかす")
         root.focus_force()
@@ -232,13 +232,13 @@ def HealtheyeS(mode_cnt, fw_count, ew_count, fw, ew, dis_Ans, text_Change, fx, f
 
     # 制限時間を超えたらパスワード入力画面を表示
     # if f_limit <= gtime_cnt.val:
-    if gend.flg == 1:
-        toggle_visibility_on()
-        focus()
-        root.focus_force()
-        print("画面を覆う")
+    # if gend.flg == 1:
+    #     toggle_visibility_on()
+    #     focus()
+    #     root.focus_force()
+    #     print("画面を覆う")
 
-        print("モザイクとパスワードを出す")
+    #     print("モザイクとパスワードを出す")
 
 
 def build_gui():
@@ -321,8 +321,9 @@ print("設定が消えるよ")
 
 
 # 全ての終了処理
-thread_setting.join()
+thread_app.join()
 thread_camera.join()
+thread_setting.join()
 # カメラのリソースを開放する
 cap.release()
 cv2.destroyAllWindows()
@@ -330,6 +331,7 @@ print("カメラが終了しました")
 
 print("終了します")
 
+sys.exit()
 # HealtheyeS(mode_cnt, fw_count, ew_count, fw, ew, dis_Ans, text_Change, fx, fy, ex, ey, SAMPLE_LEN, FW_SAMPLE, EW_SAMPLE, MODECOUNT)
 # print("カメラを起動しました")
 

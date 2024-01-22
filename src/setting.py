@@ -36,7 +36,8 @@ def setting_end():
         # print("パスワードフラグ：%d" % gpass_sec.flg)
         # formの削除
         setting_form.quit()
-        print("設定のウインドウを閉じました")
+        setting_form.destroy()
+        print("設定なしのウインドウを閉じました")
         # print("setting endflg:%d" % gend.flg)
         # thread_time_start.join()
         print("thread_time_startを閉じました")
@@ -62,7 +63,8 @@ def setting_end():
                 # print("thread_time_startを閉じました")
                 # print("おわりフラグ：%d" % gend.flg)
                 setting_form.quit()
-                print("設定のウインドウを閉じました")
+                setting_form.destroy()
+                print("設定ありのウインドウを閉じました")
                 # gsetting_thread_end.flg = 1
             else:
                 print("解除できていないようだ")
@@ -84,12 +86,12 @@ def label_update():
             setting_end()
         # nokoritime = 0
     else:
+        # 残り時間の通知
+        if nokoritime == 5:
+            messagebox.showinfo("時間の通知です", "残り5分です")
+        # カウントダウン
         nokoritime -= 1
-    try:
         limit_label.configure(text='残り時間:%d' % nokoritime)
-        # print("経過時間:%d" % gtime_cnt.val)
-    except NameError:
-        pass
     # afterで1秒ごとのカウントダウン
     setting_form.after(1000, label_update)
 
@@ -120,14 +122,13 @@ def setting():
     # パスワード設定ボタンを押したときの処理
 # パスワード
 
-
     def pass_dicide_click():
         print("パスワード設定ボタンを押しました")
         # パスワードを取得
         password = password_entry.get()
         print(password)
         # パスワードをpassword.txtに保存
-        f = open('src/password.txt', 'w')
+        f = open('password.txt', 'w')
         f.write(str(password))
         f.close()
         # 空白なら警告
@@ -155,7 +156,7 @@ def setting():
             # 秒
             limit_minut = int(limit)
             # 制限時間をlimit.txtに保存
-            f = open('src/limit.txt', 'w')
+            f = open('limit.txt', 'w')
             f.write(str(limit_minut))
             f.close()
             # ラベルの更新
