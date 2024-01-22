@@ -418,7 +418,7 @@ def setting():
     limit_label.grid(row=11, column=0, pady=12, padx=10, sticky='w')
     # 終了
     button_exit = ctk.CTkButton(
-        setting_form, text='アプリを終了', command=lambda: setting_end(), fg_color='red')
+        setting_form, text='アプリを終了', command=lambda: setting_end(), fg_color='red', text_color='black')
     # button_exit = ctk.CTkButton(setting_form, text='アプリを終了', command=lambda:setting_end(),fg_color='red')
     button_exit.grid(row=12, column=0, pady=6, padx=5, sticky='e')
 
