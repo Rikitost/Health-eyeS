@@ -221,12 +221,14 @@ def HealtheyeS(mode_cnt, fw_count, ew_count, fw, ew, dis_Ans, textChange, fx, fy
                 # if f_limit > gtime_cnt.val:
             print('%.2fcm\n' % dis_Ans)    # 小数第２位まで出力
 
-# カウントのリセット
+    # カウントのリセット
         fw_count = []
         ew_count = []
 
-    HealtheyeS(mode_cnt, fw_count, ew_count, fw, ew, dis_Ans,
-               textChange, fx, fy, ex, ey, sampleLen, fwSample, ewSample, MODE)
+    # 終了フラグ
+    if gend.flg != 1:
+        HealtheyeS(mode_cnt, fw_count, ew_count, fw, ew, dis_Ans,
+                   textChange, fx, fy, ex, ey, sampleLen, fwSample, ewSample, MODE)
 
 
 # time_limitの変更箇所-----------------------------------------
@@ -316,20 +318,25 @@ thread_camera.start()
 # 設定画面のスレッド
 thread_setting = threading.Thread(target=setting.setting)
 thread_setting.start()
-print("設定が消えるよ")
 
 # 全てを終わらせるのだ
 if gend.flg == 1:
+    # カメラスレッド
     thread_camera.join()
+    # 注意画面フォーム
     root.quit()
     root.destroy()
     print("この世の終わり")
 
 # 全ての終了処理
 if gend.flg == 1:
+    # 注意画面のスレッド
     thread_app.join()
+    # 設定のスレッド
     thread_setting.join()
+    # カメラの開放
     cap.release()
+    # cvのデストロイ
     cv2.destroyAllWindows()
     print("カメラが終了しました")
 

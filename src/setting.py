@@ -86,9 +86,9 @@ def label_update():
             setting_end()
         # nokoritime = 0
     else:
-        # 残り時間の通知
-        if nokoritime == 5:
-            messagebox.showinfo("時間の通知です", "残り5分です")
+        # # 残り時間の通知
+        # if nokoritime == 5:
+        #     messagebox.showinfo("時間の通知です", "残り5分です")
         # カウントダウン
         nokoritime -= 1
         limit_label.configure(text='残り時間:%d' % nokoritime)
@@ -121,6 +121,7 @@ def setting():
     # ----------------------------------------------------------------------------------
     # パスワード設定ボタンを押したときの処理
 # パスワード
+
 
     def pass_dicide_click():
         print("パスワード設定ボタンを押しました")
@@ -288,7 +289,7 @@ def setting():
     limit_label.grid(row=11, column=0, pady=12, padx=10, sticky='w')
     # 終了
     button_exit = ctk.CTkButton(
-        setting_form, text='アプリを終了', command=lambda: setting_end(), fg_color='red')
+        setting_form, text='アプリを終了', command=lambda: setting_end(), fg_color='red', text_color='black')
     # button_exit = ctk.CTkButton(setting_form, text='アプリを終了', command=lambda:setting_end(),fg_color='red')
     button_exit.grid(row=12, column=0, pady=6, padx=5, sticky='e')
 
