@@ -116,7 +116,4 @@ def passbox_tk():
 
 if __name__ == '__main__':
     global_set()
-    f = open('password.txt', 'r')
-    password = f.read()
-    f.close()
     passbox_tk()

@@ -132,8 +132,6 @@ def rootwin():
     # ウィンドウの表示
     root.deiconify()
     # ウィンドウを透明クリック可能にする
-    # タイトルバーを非表示にする
-    root.overrideredirect(True)
 
     root.wm_attributes("-transparentcolor", "white")
     root.geometry("{0}x{1}+0+0".format(3000, 3000))
@@ -142,23 +140,27 @@ def rootwin():
     # root.attributes("-zoomed", "1")
     # root.attributes("-fullscreen", True)
     # タスクバー
-    # root.overrideredirect(True)
+    root.overrideredirect(True)
     # 最前面
     # root.attributes("-topmost", True)
     # ウィンドウ移動、サイズ変更の無効
     root.bind("<B1-Motion>", lambda event: "break")
     root.bind("<Configure>", lambda event: "break")
     toggle_visibility_off()
-    # formの表示
-    root.after(100, HealtheyeS)
+
+    # ラムダ式を使用して HealtheyeS 関数を呼び出す
+    thread_camera = threading.Thread(target=HealtheyeS, args=(mode_cnt, fw_count, ew_count, fw,
+                                                              ew, dis_Ans, text_Change, fx, fy, ex, ey, SAMPLE_LEN, FW_SAMPLE, EW_SAMPLE, MODECOUNT))
+    thread_camera.start()
+
+    # root.after(100, HealtheyeS)
     root.mainloop()
 
 
 def HealtheyeS(mode_cnt, fw_count, ew_count, fw, ew, dis_Ans, textChange, fx, fy, ex, ey, sampleLen, fwSample, ewSample, MODE):
-    def focus():
-        print("ふぉーかす")
-        root.focus_force()
-
+    time.sleep(0.1)
+    # テスト用カウント
+    print(mode_cnt)
     # count += 1
     ret, frame = cap.read()
 
@@ -220,13 +222,17 @@ def HealtheyeS(mode_cnt, fw_count, ew_count, fw, ew, dis_Ans, textChange, fx, fy
                 MODE = 20
             elif dis_Ans >= 30:
                 toggle_visibility_off()
-                # if f_limit > gtime_cnt.val:
-                print('%.2fcm\n' % dis_Ans)    # 小数第２位まで出力
                 MODE = 50
+                # if f_limit > gtime_cnt.val:
+            print('%.2fcm\n' % dis_Ans)    # 小数第２位まで出力
 
 # カウントのリセット
         fw_count = []
         ew_count = []
+
+    HealtheyeS(mode_cnt, fw_count, ew_count, fw, ew, dis_Ans,
+               textChange, fx, fy, ex, ey, sampleLen, fwSample, ewSample, MODE)
+
 
 # time_limitの変更箇所-----------------------------------------
 
@@ -239,13 +245,6 @@ def HealtheyeS(mode_cnt, fw_count, ew_count, fw, ew, dis_Ans, textChange, fx, fy
     #     print("画面を覆う")
 
     #     print("モザイクとパスワードを出す")
-
-
-def build_gui():
-    # GUIの構築をここに記述
-    # labelの情報
-    toggle_label = tk.Label(root, text="近いです離れてください")
-    toggle_label.pack(pady=20)
 
 
 # ---------------------------------------------------------------------------------------------------------
@@ -309,9 +308,9 @@ print("カメラを起動中…")
 
 
 # カメラのスレッド
-thread_camera = threading.Thread(target=HealtheyeS, args=(mode_cnt, fw_count, ew_count, fw,
-                                 ew, dis_Ans, text_Change, fx, fy, ex, ey, SAMPLE_LEN, FW_SAMPLE, EW_SAMPLE, MODECOUNT))
-thread_camera.start()
+# thread_camera = threading.Thread(target=HealtheyeS, args=(mode_cnt, fw_count, ew_count, fw,
+#                                                           ew, dis_Ans, text_Change, fx, fy, ex, ey, SAMPLE_LEN, FW_SAMPLE, EW_SAMPLE, MODECOUNT))
+# thread_camera.start()
 
 
 # 設定画面のスレッド
@@ -321,17 +320,19 @@ print("設定が消えるよ")
 
 
 # 全ての終了処理
-thread_app.join()
-thread_camera.join()
-thread_setting.join()
+# thread_app.join()
+# thread_camera.join()
+# thread_setting.join()
 # カメラのリソースを開放する
-cap.release()
-cv2.destroyAllWindows()
+# cap.release()
+# cv2.destroyAllWindows()
 print("カメラが終了しました")
 
 print("終了します")
 
 sys.exit()
+
+
 # HealtheyeS(mode_cnt, fw_count, ew_count, fw, ew, dis_Ans, text_Change, fx, fy, ex, ey, SAMPLE_LEN, FW_SAMPLE, EW_SAMPLE, MODECOUNT)
 # print("カメラを起動しました")
 
