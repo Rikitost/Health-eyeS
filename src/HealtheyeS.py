@@ -12,6 +12,7 @@ from tkinter import messagebox
 import customtkinter as ctk
 
 # 使用ファイル
+import warning
 import setting
 import password_input
 # グローバル変数のファイル
@@ -19,21 +20,7 @@ import end_flg_value as gend  # 終了フラグ 0:継続 1:終了(flg)
 import restart_flg as grestart_flg  # 再起動フラグ 0:再起動待機 1:再起動 (flg)
 
 
-# formの表示関数
-def toggle_visibility_on():
-    # ウィンドウの透明度を設定 (0: 完全透明, 1: 完全不透明)
-    root.attributes("-alpha", 0.97)
-# 非表示---------------------------------------------------------------------------------------------------------------------
-
-
-def toggle_visibility_off():
-    # ウィンドウの透明度を設定 (0: 完全透明, 1: 完全不透明)
-    root.attributes("-alpha", 0)
-# ----------------------------------------------------------------------------------
-
 # 入力された値(fw,ew)から距離を求める関数--------------------------------------------------------------------
-
-
 def distance(sample_Len, fw_Sample, ew_Sample, fw, ew):
     value_Abs = []      # 入力された値xと事前に計測された値との絶対値を格納
     value_abs_cnt = 0             # カウントの役割をする変数
@@ -122,36 +109,6 @@ def distance(sample_Len, fw_Sample, ew_Sample, fw, ew):
     return ans
 
 
-# formの設定等
-def rootwin():
-    # form
-    global root
-    root = tk.Tk()
-    root.title("注意画面")
-    # ウィンドウの初期設定
-    # ウィンドウの表示
-    root.deiconify()
-    # ウィンドウを透明クリック可能にする
-
-    root.wm_attributes("-transparentcolor", "white")
-    root.geometry("{0}x{1}+0+0".format(3000, 3000))
-    # ウィンドウの初期設定
-    # 画面全体
-    # root.attributes("-zoomed", "1")
-    # root.attributes("-fullscreen", True)
-    # タスクバー
-    root.overrideredirect(True)
-    # 最前面
-    # root.attributes("-topmost", True)
-    # ウィンドウ移動、サイズ変更の無効
-    root.bind("<B1-Motion>", lambda event: "break")
-    root.bind("<Configure>", lambda event: "break")
-    toggle_visibility_off()
-
-    # root.after(100, HealtheyeS)
-    root.mainloop()
-
-
 def HealtheyeS(mode_cnt, fw_count, ew_count, fw, ew, dis_Ans, textChange, fx, fy, ex, ey, sampleLen, fwSample, ewSample, MODE):
     time.sleep(0.1)
     # テスト用カウント
@@ -198,25 +155,25 @@ def HealtheyeS(mode_cnt, fw_count, ew_count, fw, ew, dis_Ans, textChange, fx, fy
         # 距離によって表示を変える
         if dis_Ans == -1:
             # ぼかしの処理
-            toggle_visibility_on()
+            warning.toggle_visibility_on()
             # コマンドライン
             print('10cm以下です!近すぎます!!\n')
             MODE = 20
         elif dis_Ans == -2:
             # ぼかしの処理
-            toggle_visibility_off()
+            warning.toggle_visibility_off()
             # if f_limit > gtime_cnt.val:
             print('70cm以上離れています!!\n')
             MODE = 50
         else:
             if dis_Ans < 30:
                 # ぼかしの処理
-                toggle_visibility_on()
+                warning.toggle_visibility_on()
                 # コマンドライン
                 print('顔が近いので少し離れてください')
                 MODE = 20
             elif dis_Ans >= 30:
-                toggle_visibility_off()
+                warning.toggle_visibility_off()
                 MODE = 50
                 # if f_limit > gtime_cnt.val:
             print('%.2fcm\n' % dis_Ans)    # 小数第２位まで出力
@@ -229,22 +186,12 @@ def HealtheyeS(mode_cnt, fw_count, ew_count, fw, ew, dis_Ans, textChange, fx, fy
     if gend.flg != 1:
         HealtheyeS(mode_cnt, fw_count, ew_count, fw, ew, dis_Ans,
                    textChange, fx, fy, ex, ey, sampleLen, fwSample, ewSample, MODE)
-
-
-# time_limitの変更箇所-----------------------------------------
-
-    # 制限時間を超えたらパスワード入力画面を表示
-    # if f_limit <= gtime_cnt.val:
-    # if gend.flg == 1:
-    #     toggle_visibility_on()
-    #     focus()
-    #     root.focus_force()
-    #     print("画面を覆う")
-
-    #     print("モザイクとパスワードを出す")
-
-
-# ---------------------------------------------------------------------------------------------------------
+    else:
+        # カメラの開放
+        cap.release()
+        # cvのデストロイ
+        cv2.destroyAllWindows()
+        print("カメラが終了しました")
 
 
 # アプリケーションの実行部分---------------------------------------------------------------------------------------------
@@ -298,98 +245,40 @@ gend.flg = 0
 # visibility_flg = 0
 # newend_flg = 0
 
-# formのスレッド
-thread_app = threading.Thread(target=rootwin)
-thread_app.start()
-
-
-print("カメラを起動中…")
-
+# 注意画面のスレッド
+thread_warning = threading.Thread(target=warning.rootwin)
+thread_warning.start()
 
 # ラムダ式を使用して HealtheyeS 関数を呼び出す
 thread_camera = threading.Thread(target=HealtheyeS, args=(mode_cnt, fw_count, ew_count, fw,
                                                           ew, dis_Ans, text_Change, fx, fy, ex, ey, SAMPLE_LEN, FW_SAMPLE, EW_SAMPLE, MODECOUNT))
 thread_camera.start()
-# カメラのスレッド
-# thread_camera = threading.Thread(target=HealtheyeS, args=(mode_cnt, fw_count, ew_count, fw,
-#                                                           ew, dis_Ans, text_Change, fx, fy, ex, ey, SAMPLE_LEN, FW_SAMPLE, EW_SAMPLE, MODECOUNT))
-# thread_camera.start()
 
 # 設定画面のスレッド
 thread_setting = threading.Thread(target=setting.setting)
 thread_setting.start()
 
-# 全てを終わらせるのだ
-if gend.flg == 1:
-    # カメラスレッド
-    thread_camera.join()
-    # 注意画面フォーム
-    root.quit()
-    root.destroy()
-    print("この世の終わり")
 
-# 全ての終了処理
-if gend.flg == 1:
-    # 注意画面のスレッド
-    thread_app.join()
-    # 設定のスレッド
-    thread_setting.join()
-    # カメラの開放
-    cap.release()
-    # cvのデストロイ
-    cv2.destroyAllWindows()
-    print("カメラが終了しました")
-
-    print("終了します")
-
-    sys.exit()
+print("カメラを起動中…")
 
 
-# HealtheyeS(mode_cnt, fw_count, ew_count, fw, ew, dis_Ans, text_Change, fx, fy, ex, ey, SAMPLE_LEN, FW_SAMPLE, EW_SAMPLE, MODECOUNT)
-# print("カメラを起動しました")
+while True:
+    time.sleep(1)
+    # 全ての終了処理
+    if gend.flg == 1:
+        print("b")
+        # 注意画面のスレッド
+        thread_warning.join()
+        print("画面のスレッド終了")
+        # 設定のスレッド
+        thread_setting.join()
+        print("設定のスレッド")
+        # 全てを終わらせるのだ
+        # カメラスレッド
+        thread_camera.join()
+        print("カメラのスレッド終了")
 
+        print("終了します")
+        break
 
-# 終了フラグまたは再起動フラグが立ったら終了
-# if gend.flg == 1 or grestart_flg.flg == 1:
-#     print("thread_cameraを終了します")
-#     thread_camera.join()
-#     print("thread_cameraを終了しました")
-
-#     print("カメラを終了します")
-#     # カメラのリソースを開放する
-#     cap.release()
-#     cv2.destroyAllWindows()
-#     print("カメラが終了しました")
-
-#     print("終了します")
-
-# if gend.flg == 1 and newend_flg == 1:
-#     print("thread_cameraを終了します")
-#     thread_camera.join()
-#     print("thread_cameraを終了待ち")
-
-#     # print("カメラを終了します")
-# # カメラのリソースを開放する
-# cap.release()
-# print("カメラが終了しました")
-
-#     print("カメラを終了します")
-#     # カメラのリソースを開放する
-#     cap.release()
-#     print("カメラが終了しました")
-#     print("cv2.destroyAllWindows()を実行します")
-#     cv2.destroyAllWindows()
-#     print("cv2.destroyAllWindows()を実行しました")
-
-#     # print("thread_appを終了します")
-#     # thread_app.join()
-#     # print("thread_appを終了しました")
-#     # OpenCVのウィンドウをすべて閉じる
-#     # print("rootを終了します")
-#     # root.quit()
-#     # print("rootを終了しました")
-
-#     # password_input.passbox_end()
-#     print("正常に終了しました")
-#     sys.exit()
-# # ------------------------------------------------------------------------------------------------------------------------
+sys.exit()

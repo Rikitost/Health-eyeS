@@ -82,6 +82,8 @@ def label_update():
     # limitlablがないときの例外処理
     if nokoritime <= 0:
         if pass_form == 0:
+            # 注意画面の表示
+
             # パスワードを入力させて終わる
             setting_end()
         # nokoritime = 0
