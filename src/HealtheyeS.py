@@ -148,11 +148,6 @@ def rootwin():
     root.bind("<Configure>", lambda event: "break")
     toggle_visibility_off()
 
-    # ラムダ式を使用して HealtheyeS 関数を呼び出す
-    thread_camera = threading.Thread(target=HealtheyeS, args=(mode_cnt, fw_count, ew_count, fw,
-                                                              ew, dis_Ans, text_Change, fx, fy, ex, ey, SAMPLE_LEN, FW_SAMPLE, EW_SAMPLE, MODECOUNT))
-    thread_camera.start()
-
     # root.after(100, HealtheyeS)
     root.mainloop()
 
@@ -295,6 +290,8 @@ EW_SAMPLE = [268, 214, 161, 118,  90,  62,
 # -------------------------------------------------------------------------------
 
 # 時間の設定のフォーム
+# 終わりフラグ初期値
+gend.flg = 0
 # global_set()
 # visibility_flg = 0
 # newend_flg = 0
@@ -307,30 +304,38 @@ thread_app.start()
 print("カメラを起動中…")
 
 
+# ラムダ式を使用して HealtheyeS 関数を呼び出す
+thread_camera = threading.Thread(target=HealtheyeS, args=(mode_cnt, fw_count, ew_count, fw,
+                                                          ew, dis_Ans, text_Change, fx, fy, ex, ey, SAMPLE_LEN, FW_SAMPLE, EW_SAMPLE, MODECOUNT))
+thread_camera.start()
 # カメラのスレッド
 # thread_camera = threading.Thread(target=HealtheyeS, args=(mode_cnt, fw_count, ew_count, fw,
 #                                                           ew, dis_Ans, text_Change, fx, fy, ex, ey, SAMPLE_LEN, FW_SAMPLE, EW_SAMPLE, MODECOUNT))
 # thread_camera.start()
-
 
 # 設定画面のスレッド
 thread_setting = threading.Thread(target=setting.setting)
 thread_setting.start()
 print("設定が消えるよ")
 
+# 全てを終わらせるのだ
+if gend.flg == 1:
+    thread_camera.join()
+    root.quit()
+    root.destroy()
+    print("この世の終わり")
 
 # 全ての終了処理
-# thread_app.join()
-# thread_camera.join()
-# thread_setting.join()
-# カメラのリソースを開放する
-# cap.release()
-# cv2.destroyAllWindows()
-print("カメラが終了しました")
+if gend.flg == 1:
+    thread_app.join()
+    thread_setting.join()
+    cap.release()
+    cv2.destroyAllWindows()
+    print("カメラが終了しました")
 
-print("終了します")
+    print("終了します")
 
-sys.exit()
+    sys.exit()
 
 
 # HealtheyeS(mode_cnt, fw_count, ew_count, fw, ew, dis_Ans, text_Change, fx, fy, ex, ey, SAMPLE_LEN, FW_SAMPLE, EW_SAMPLE, MODECOUNT)
