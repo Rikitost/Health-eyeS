@@ -261,10 +261,8 @@ print("カメラを起動中…")
 
 while True:
     time.sleep(1)
-    print("a")
     # 全ての終了処理
     if gend.flg == 1:
-        print("b")
         # カメラの開放
         cap.release()
         # cvのデストロイ
