@@ -107,6 +107,7 @@ def setting():
     # form,ラベル時間,ファイルに入力された時間,パスワード,残り時間,フォームが複数開かないようするflg
     global setting_form
     global limit_label
+    global label_realtime
     global f_limit
     global f_password
     global nokoritime
@@ -149,7 +150,9 @@ def setting():
 # 時間
 
     def limit_dicide_click():
+        # 残り時間と現在の設定時間表示ラベルの更新部分
         global nokoritime
+        global label_realtime
         # 入力した制限時間を取得
         limit = limit_entry.get()
         # 空白なら警告
@@ -169,6 +172,8 @@ def setting():
             f.close()
             # ラベルの更新
             nokoritime = int(limit_minut)
+            # 現在設定されている制限時間
+            label_realtime.configure(text='残り時間:%d分' % int(limit_minut))
             # メッセージを表示
             messagebox.showinfo('制限時間設定', '制限時間を設定しました')
 # 再起動
@@ -288,9 +293,9 @@ def setting():
             setting_form, text='現在の制限時間:%s分' % f_limit)
     label_realtime.grid(row=9, column=0, pady=12, padx=10, sticky='e')
     # 再起動
-    button_restart = ctk.CTkButton(
-        setting_form, text='適用して再起動', command=lambda: app_restart_click())
-    button_restart.grid(row=11, column=0, pady=5, padx=5, sticky='e')
+    # button_restart = ctk.CTkButton(
+    #     setting_form, text='適用して再起動', command=lambda: app_restart_click())
+    # button_restart.grid(row=11, column=0, pady=5, padx=5, sticky='e')
     # 経過時間
     limit_label = ctk.CTkLabel(setting_frame, text='残り時間')
     limit_label.grid(row=11, column=0, pady=12, padx=10, sticky='w')
