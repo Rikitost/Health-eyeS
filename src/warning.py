@@ -61,7 +61,6 @@ def rootwin():
                 toggle_visibility_off()
             # 1秒ごとに監視いたします
             root.after(1000, warning)
-        print(warn.flg)
 
     root.after(100, warning)
 
