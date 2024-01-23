@@ -9,7 +9,7 @@ import password_input
 import end_flg_value as gend  # 終了フラグ 0:継続 1:終了(flg)
 import pass_sec_value as gpass_sec  # パスワードが解かれたか 0:ロック 1:解除 (flg)
 # 注意画面のフラグ(0:非表示,1:表示)
-import warning_flg as warn
+import time_limit as limit
 
 
 # 数値のみ入力を受け付ける処理
@@ -86,7 +86,7 @@ def label_update():
     # limitlablがないときの例外処理
     if nokoritime <= 0:
         # 時間制限で注意画面の表示フラグを立てる
-        warn.flg = 1
+        limit.flg = 1
         # パスワードformの開いているか
         if pass_form == 0:
             # パスワードを入力させて終わる
