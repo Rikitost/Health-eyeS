@@ -17,7 +17,6 @@ import setting
 import password_input
 # グローバル変数のファイル
 import end_flg_value as gend  # 終了フラグ 0:継続 1:終了(flg)
-import restart_flg as grestart_flg  # 再起動フラグ 0:再起動待機 1:再起動 (flg)
 import warning_flg as warn  # 注意画面のフラグ(0:非表示,1:表示)
 import time_limit as limit  # 時間切れ(0;継続,1:終了)
 
