@@ -34,14 +34,14 @@ def rootwin():
     root.deiconify()
     # ウィンドウを透明クリック可能にする
     root.wm_attributes("-transparentcolor", "white")
-    root.geometry("{0}x{1}+0+0".format(3000, 3000))
+    # root.geometry("{0}x{1}+0+0".format(3000, 3000))
     # ウィンドウの初期設定
     # 画面全体
-    # root.attributes("-fullscreen", True)
+    root.attributes("-fullscreen", True)
     # タスクバー
     root.overrideredirect(True)
     # 最前面
-    # root.attributes("-topmost", True)
+    root.attributes("-topmost", True)
     # ウィンドウ移動、サイズ変更の無効
     root.bind("<B1-Motion>", lambda event: "break")
     root.bind("<Configure>", lambda event: "break")
@@ -54,7 +54,7 @@ def rootwin():
             root.quit()
             root.destroy()
         else:
-            # 注意画面の判定
+            # 注意画面の判定(時間切れと近い時)
             if warn.flg == 1 or limit.flg == 1:
                 # 注意画面のon
                 toggle_visibility_on()
