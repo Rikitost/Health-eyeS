@@ -55,6 +55,7 @@ def rootwin():
     if gend.flg == 1:
         toggle_visibility_off()
         root.quit()
+        root.destroy()
     else:
         # 1秒ごとに監視
         root.after(1000, rootwin)
