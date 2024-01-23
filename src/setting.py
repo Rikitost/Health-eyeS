@@ -8,6 +8,8 @@ import password_input
 # グローバル変数
 import end_flg_value as gend  # 終了フラグ 0:継続 1:終了(flg)
 import pass_sec_value as gpass_sec  # パスワードが解かれたか 0:ロック 1:解除 (flg)
+# 注意画面のフラグ(0:非表示,1:表示)
+import warning_flg as warn
 
 
 # 数値のみ入力を受け付ける処理
@@ -32,15 +34,15 @@ def setting_end():
     # パスワードを設定していないなら
     if f_password == "":
         print("パスワード認証をスキップ")
-        gend.flg = 1  # 終了フラグを立てる
         # print("パスワードフラグ：%d" % gpass_sec.flg)
         # formの削除
         setting_form.quit()
         setting_form.destroy()
+        gend.flg = 1  # 終了フラグを立てる
         print("設定なしのウインドウを閉じました")
         # print("setting endflg:%d" % gend.flg)
         # thread_time_start.join()
-        print("thread_time_startを閉じました")
+        # print("thread_time_startを閉じました")
 
     #         # setting_form.destroy()
     else:
@@ -53,17 +55,19 @@ def setting_end():
                 if isinstance(widget, ctk.CTkButton):
                     widget.configure(state=tk.DISABLED)
             # setting_form.configure(state=ctk.DISABLED)
+            # パスワード入力画面が出たときに注意画面より上に表示させるため
+            # passform.flg = 1
             # パスワードのformを開く
             password_input.passbox_tk()
 
         # print(gpass_sec.flg)
             if gpass_sec.flg == 1:
-                gend.flg = 1  # 終了フラグを立てる
                 # thread_time_start.join()
                 # print("thread_time_startを閉じました")
                 # print("おわりフラグ：%d" % gend.flg)
                 setting_form.quit()
                 setting_form.destroy()
+                gend.flg = 1  # 終了フラグを立てる
                 print("設定ありのウインドウを閉じました")
                 # gsetting_thread_end.flg = 1
             else:
@@ -81,9 +85,10 @@ def label_update():
     # 経過時間ラベルの更新
     # limitlablがないときの例外処理
     if nokoritime <= 0:
+        # 時間制限で注意画面の表示フラグを立てる
+        warn.flg = 1
+        # パスワードformの開いているか
         if pass_form == 0:
-            # 注意画面の表示
-
             # パスワードを入力させて終わる
             setting_end()
         # nokoritime = 0

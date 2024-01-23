@@ -18,6 +18,7 @@ import password_input
 # グローバル変数のファイル
 import end_flg_value as gend  # 終了フラグ 0:継続 1:終了(flg)
 import restart_flg as grestart_flg  # 再起動フラグ 0:再起動待機 1:再起動 (flg)
+import warning_flg as warn  # 注意画面のフラグ(0:非表示,1:表示)
 
 
 # 入力された値(fw,ew)から距離を求める関数--------------------------------------------------------------------
@@ -155,25 +156,25 @@ def HealtheyeS(mode_cnt, fw_count, ew_count, fw, ew, dis_Ans, textChange, fx, fy
         # 距離によって表示を変える
         if dis_Ans == -1:
             # ぼかしの処理
-            warning.toggle_visibility_on()
+            warn.flg = 1
             # コマンドライン
             print('10cm以下です!近すぎます!!\n')
             MODE = 20
         elif dis_Ans == -2:
             # ぼかしの処理
-            warning.toggle_visibility_off()
+            warn.flg = 0
             # if f_limit > gtime_cnt.val:
             print('70cm以上離れています!!\n')
             MODE = 50
         else:
             if dis_Ans < 30:
                 # ぼかしの処理
-                warning.toggle_visibility_on()
+                warn.flg = 1
                 # コマンドライン
                 print('顔が近いので少し離れてください')
                 MODE = 20
             elif dis_Ans >= 30:
-                warning.toggle_visibility_off()
+                warn.flg = 0
                 MODE = 50
                 # if f_limit > gtime_cnt.val:
             print('%.2fcm\n' % dis_Ans)    # 小数第２位まで出力
@@ -182,16 +183,11 @@ def HealtheyeS(mode_cnt, fw_count, ew_count, fw, ew, dis_Ans, textChange, fx, fy
         fw_count = []
         ew_count = []
 
+    # afterで
     # 終了フラグ
     if gend.flg != 1:
         HealtheyeS(mode_cnt, fw_count, ew_count, fw, ew, dis_Ans,
                    textChange, fx, fy, ex, ey, sampleLen, fwSample, ewSample, MODE)
-    else:
-        # カメラの開放
-        cap.release()
-        # cvのデストロイ
-        cv2.destroyAllWindows()
-        print("カメラが終了しました")
 
 
 # アプリケーションの実行部分---------------------------------------------------------------------------------------------
@@ -241,6 +237,7 @@ EW_SAMPLE = [268, 214, 161, 118,  90,  62,
 # 時間の設定のフォーム
 # 終わりフラグ初期値
 gend.flg = 0
+warn.flg = 0
 # global_set()
 # visibility_flg = 0
 # newend_flg = 0
@@ -264,9 +261,18 @@ print("カメラを起動中…")
 
 while True:
     time.sleep(1)
+    print("a")
     # 全ての終了処理
     if gend.flg == 1:
         print("b")
+        # カメラの開放
+        cap.release()
+        # cvのデストロイ
+        cv2.destroyAllWindows()
+        print("カメラが終了しました")
+        # カメラスレッド
+        thread_camera.join()
+        print("カメラのスレッド終了")
         # 注意画面のスレッド
         thread_warning.join()
         print("画面のスレッド終了")
@@ -274,9 +280,6 @@ while True:
         thread_setting.join()
         print("設定のスレッド")
         # 全てを終わらせるのだ
-        # カメラスレッド
-        thread_camera.join()
-        print("カメラのスレッド終了")
 
         print("終了します")
         break
