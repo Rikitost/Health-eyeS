@@ -8,7 +8,7 @@ import password_input
 # グローバル変数
 import end_flg_value as gend  # 終了フラグ 0:継続 1:終了(flg)
 import pass_sec_value as gpass_sec  # パスワードが解かれたか 0:ロック 1:解除 (flg)
-# 注意画面のフラグ(0:非表示,1:表示)
+# 時間切れ(0;継続,1:終了)
 import time_limit as limit
 
 

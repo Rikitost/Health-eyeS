@@ -8,7 +8,7 @@ import time
 import end_flg_value as gend  # 終了フラグ 0:継続 1:終了(flg)
 # 注意画面のフラグ(0:非表示,1:表示)
 import warning_flg as warn
-# 時間切れ
+# 時間切れ(0;継続,1:終了)
 import time_limit as limit
 
 

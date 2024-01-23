@@ -19,7 +19,7 @@ import password_input
 import end_flg_value as gend  # 終了フラグ 0:継続 1:終了(flg)
 import restart_flg as grestart_flg  # 再起動フラグ 0:再起動待機 1:再起動 (flg)
 import warning_flg as warn  # 注意画面のフラグ(0:非表示,1:表示)
-import time_limit as limit  # 時間
+import time_limit as limit  # 時間切れ(0;継続,1:終了)
 
 
 # 入力された値(fw,ew)から距離を求める関数--------------------------------------------------------------------
@@ -237,6 +237,7 @@ EW_SAMPLE = [268, 214, 161, 118,  90,  62,
 
 # 時間の設定のフォーム
 # 終わりフラグ初期値
+# グローバル変数の初期値
 gend.flg = 0
 warn.flg = 0
 limit.flg = 0
