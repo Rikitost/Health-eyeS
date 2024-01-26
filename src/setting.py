@@ -61,6 +61,7 @@ def setting_end():
             password_input.passbox_tk()
 
         # print(gpass_sec.flg)
+        # パスワードが解かれた
             if gpass_sec.flg == 1:
                 # thread_time_start.join()
                 # print("thread_time_startを閉じました")
@@ -99,8 +100,8 @@ def label_update():
         # カウントダウン
         nokoritime -= 1
         limit_label.configure(text='残り時間:%d' % nokoritime)
-    # afterで1秒ごとのカウントダウン
-    setting_form.after(1000, label_update)
+        # afterで1秒ごとのカウントダウン
+        setting_form.after(1000, label_update)
 
 
 def setting():
