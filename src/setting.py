@@ -113,6 +113,9 @@ def setting():
     global nokoritime
     global pass_form
     pass_form = 0
+    # 注意のラベル
+    global label_time_error
+    global label_newpassword_error
 
 
 # ボタンクリック関連の関数------------------------------------------------------------
@@ -130,7 +133,6 @@ def setting():
     # パスワード設定ボタンを押したときの処理
 # パスワード
 
-
     def pass_dicide_click():
         print("パスワード設定ボタンを押しました")
         # パスワードを取得
@@ -140,24 +142,29 @@ def setting():
         f = open('password.txt', 'w')
         f.write(str(password))
         f.close()
+
+        label_newpassword_error.configure(
+            text="パスワードを設定しました", text_color='blue')
         # 空白なら警告
-        if password == '':
-            # メッセージを表示
-            messagebox.showinfo('パスワード設定', 'パスワードなしで設定しました')
-        else:
-            # メッセージを表示
-            messagebox.showinfo('パスワード設定', 'パスワードを設定しました')
+        # if password == '':
+        #     # メッセージを表示
+        #     messagebox.showinfo('パスワード設定', 'パスワードなしで設定しました')
+        # else:
+        #     # メッセージを表示
+        #     messagebox.showinfo('パスワード設定', 'パスワードを設定しました')
 # 時間
 
     def limit_dicide_click():
         # 残り時間と現在の設定時間表示ラベルの更新部分
         global nokoritime
         global label_realtime
+        global label_time_error
         # 入力した制限時間を取得
         limit = limit_entry.get()
         # 空白なら警告
         if limit == '':
-            messagebox.showinfo('制限時間設定', '制限時間を設定してください(分)')
+            label_time_error.configure(text="設定してください", text_color='red')
+            # messagebox.showinfo('制限時間設定', '制限時間を設定してください(分)')
             # limit_winを最前面へ
             setting_form.lift()
             return
@@ -175,6 +182,7 @@ def setting():
             # 現在設定されている制限時間
             label_realtime.configure(text='残り時間:%d分' % int(limit_minut))
             # メッセージを表示()
+            label_time_error.configure(text="設定完了", text_color='blue')
             # messagebox.showinfo('制限時間設定', '制限時間を設定しました')
 # 再起動
 
@@ -253,6 +261,12 @@ def setting():
     label_newpassword = ctk.CTkLabel(setting_form, text='新しいパスワード')
     label_newpassword.grid(row=3, column=0, padx=10, pady=10, sticky='w')
     validation = setting_form.register(on_validate)
+
+    # パスワードの注意
+    label_newpassword_error = ctk.CTkLabel(
+        setting_form, text='', text_color='red')
+    label_newpassword_error.grid(row=4, column=0, padx=10, pady=10, sticky='w')
+
     # パスワードテキストボックス
     password_entry = ctk.CTkEntry(setting_form, placeholder_text="半角数字4桁", validate="key", validatecommand=(
         validation, '%d', '%i', '%P', '%s', '%S', '%v', '%V', '%W'))
@@ -268,7 +282,7 @@ def setting():
     label_line.grid(row=4, column=0, pady=12, padx=10, rowspan=3)
 
     # 制限時間の設定
-    limit_set_label = ctk.CTkLabel(setting_form, text='制限時間設定')
+    limit_set_label = ctk.CTkLabel(setting_form, text='制限時間設定(半角数字で入力)')
     limit_set_label.grid(row=6, column=0, pady=10, padx=10, sticky='w')
     # 線
     label_line = ctk.CTkLabel(
@@ -277,6 +291,11 @@ def setting():
     # 新しい制限時間
     label_newtime = ctk.CTkLabel(setting_form, text='新しい制限時間')
     label_newtime.grid(row=8, column=0, pady=12, padx=10, sticky='w')
+
+    # 設定の注意
+    label_time_error = ctk.CTkLabel(setting_form, text='', text_color='red')
+    label_time_error.grid(row=9, column=0, pady=12, padx=10, sticky='w')
+
     # 制限時間テキストボックス
     limit_entry = ctk.CTkEntry(setting_form, placeholder_text="半角数字(分)", validate="key", validatecommand=(
         validation, '%d', '%i', '%P', '%s', '%S', '%v', '%V', '%W'))
