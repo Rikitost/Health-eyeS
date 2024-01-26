@@ -111,6 +111,7 @@ def distance(sample_Len, fw_Sample, ew_Sample, fw, ew):
 
 
 def HealtheyeS(mode_cnt, fw_count, ew_count, fw, ew, dis_Ans, textChange, fx, fy, ex, ey, sampleLen, fwSample, ewSample, MODE):
+    # 0.1秒間ごとに処理をする
     time.sleep(0.1)
     # テスト用カウント
     print(mode_cnt)

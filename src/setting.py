@@ -174,8 +174,8 @@ def setting():
             nokoritime = int(limit_minut)
             # 現在設定されている制限時間
             label_realtime.configure(text='残り時間:%d分' % int(limit_minut))
-            # メッセージを表示
-            messagebox.showinfo('制限時間設定', '制限時間を設定しました')
+            # メッセージを表示()
+            # messagebox.showinfo('制限時間設定', '制限時間を設定しました')
 # 再起動
 
     def app_restart_click():
@@ -305,14 +305,14 @@ def setting():
     # button_exit = ctk.CTkButton(setting_form, text='アプリを終了', command=lambda:setting_end(),fg_color='red')
     button_exit.grid(row=12, column=0, pady=6, padx=5, sticky='e')
 
-    # 配置配置配置配置配置配置配置配置配置配置配置配置配置配置配置配置
-    # パスワード設定ラベル
-    # 再起動ボタン
-    app_restart_btn = tk.Button(
-        setting_frame, text='アプリを再起動', command=lambda: app_restart_click())
-    # 終了ボタン
-    app_end_btn = tk.Button(setting_frame, text='アプリを終了',
-                            command=lambda: setting_end())
+    # # 配置配置配置配置配置配置配置配置配置配置配置配置配置配置配置配置
+    # # パスワード設定ラベル
+    # # 再起動ボタン
+    # app_restart_btn = tk.Button(
+    #     setting_frame, text='アプリを再起動', command=lambda: app_restart_click())
+    # # 終了ボタン
+    # app_end_btn = tk.Button(setting_frame, text='アプリを終了',
+    #                         command=lambda: setting_end())
 
 
 # ----------------------------------------------------------------
