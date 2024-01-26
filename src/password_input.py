@@ -59,10 +59,10 @@ def pass_open():
 
                     # passbox_form.destroy()
                 else:
-                    warning_pass_label.config(text='パスワードが違います')
+                    warning_pass_label.configure(text='パスワードが違います')
 
             else:
-                warning_pass_label.config(text='パスワードが違います')
+                warning_pass_label.configure(text='パスワードが違います')
     else:
         return
 

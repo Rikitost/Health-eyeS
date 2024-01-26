@@ -48,8 +48,8 @@ def rootwin():
     root.bind("<Configure>", lambda event: "break")
 
     # 喚起のラベル
-    label = tk.Label(root, text="近いです!!画面から離れてください!!")
-    label.grid(row=0, column=0, padx=10, pady=10)  # 行0、列0に配置し、パディングを設定
+    # label = tk.Label(root, text="近いです!!画面から離れてください!!")
+    # label.grid(row=0, column=0, padx=10, pady=10)  # 行0、列0に配置し、パディングを設定
 
     # 初期設定のためのoff
     toggle_visibility_off()
