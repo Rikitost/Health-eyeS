@@ -113,8 +113,6 @@ def distance(sample_Len, fw_Sample, ew_Sample, fw, ew):
 def HealtheyeS(mode_cnt, fw_count, ew_count, fw, ew, dis_Ans, textChange, fx, fy, ex, ey, sampleLen, fwSample, ewSample, MODE):
     # 0.1秒間ごとに処理をする
     time.sleep(0.1)
-    # テスト用カウント
-    print(mode_cnt)
     # count += 1
     ret, frame = cap.read()
 
@@ -158,33 +156,25 @@ def HealtheyeS(mode_cnt, fw_count, ew_count, fw, ew, dis_Ans, textChange, fx, fy
         if dis_Ans == -1:
             # ぼかしの処理
             warn.flg = 1
-            # コマンドライン
-            print('10cm以下です!近すぎます!!\n')
             MODE = 20
         elif dis_Ans == -2:
             # ぼかしの処理
             warn.flg = 0
-            # if f_limit > gtime_cnt.val:
-            print('70cm以上離れています!!\n')
             MODE = 50
         else:
             if dis_Ans < 30:
                 # ぼかしの処理
                 warn.flg = 1
-                # コマンドライン
-                print('顔が近いので少し離れてください')
                 MODE = 20
             elif dis_Ans >= 30:
                 warn.flg = 0
                 MODE = 50
-                # if f_limit > gtime_cnt.val:
             print('%.2fcm\n' % dis_Ans)    # 小数第２位まで出力
 
     # カウントのリセット
         fw_count = []
         ew_count = []
 
-    # afterで
     # 終了フラグ
     if gend.flg != 1:
         HealtheyeS(mode_cnt, fw_count, ew_count, fw, ew, dis_Ans,
@@ -241,18 +231,15 @@ EW_SAMPLE = [268, 214, 161, 118,  90,  62,
 gend.flg = 0
 warn.flg = 0
 limit.flg = 0
-# global_set()
-# visibility_flg = 0
-# newend_flg = 0
 
 # 注意画面のスレッド
 thread_warning = threading.Thread(target=warning.rootwin)
 thread_warning.start()
 
 # ラムダ式を使用して HealtheyeS 関数を呼び出す
-thread_camera = threading.Thread(target=HealtheyeS, args=(mode_cnt, fw_count, ew_count, fw,
-                                                          ew, dis_Ans, text_Change, fx, fy, ex, ey, SAMPLE_LEN, FW_SAMPLE, EW_SAMPLE, MODECOUNT))
-thread_camera.start()
+# thread_camera = threading.Thread(target=HealtheyeS, args=(mode_cnt, fw_count, ew_count, fw,
+#                                                           ew, dis_Ans, text_Change, fx, fy, ex, ey, SAMPLE_LEN, FW_SAMPLE, EW_SAMPLE, MODECOUNT))
+# thread_camera.start()
 
 # 設定画面のスレッド
 thread_setting = threading.Thread(target=setting.setting)
@@ -272,7 +259,7 @@ while True:
         cv2.destroyAllWindows()
         print("カメラが終了しました")
         # カメラスレッド
-        thread_camera.join()
+        # thread_camera.join()
         print("カメラのスレッド終了")
         # 注意画面のスレッド
         thread_warning.join()

@@ -29,7 +29,7 @@ def passbox_end():
 def pass_open():
     global gpass_sec
 
-    timeset.value_check(passset_text, warning_pass_label)
+    # timeset.value_check(passset_text, warning_pass_label)
     # 数値の入力方式が正しいか判定
     if timeset.value_check(passset_text, warning_pass_label) == True:
         # 入力されたパスワードを取得(int変換)
@@ -64,7 +64,7 @@ def pass_open():
             else:
                 warning_pass_label.configure(text='パスワードが違います')
     else:
-        return
+        print("入力が違います")
 
 
 def passbox_tk():
@@ -100,8 +100,8 @@ def passbox_tk():
         validation_pass, '%d', '%i', '%P', '%s', '%S', '%v', '%V', '%W'), placeholder_text="半角数字4桁", show="*")
     passset_text.pack(pady=12, padx=10)
 
-    warning_pass_label = tk.Label(passbox_form, text='')
-    warning_pass_label.pack()
+    warning_pass_label = ctk.CTkLabel(passbox_form, text='')
+    warning_pass_label.pack(pady=12, padx=10)
 
     # 決定のボタン
     timeset_button = ctk.CTkButton(
