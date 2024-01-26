@@ -118,18 +118,6 @@ def setting():
     global label_time_error
     global label_newpassword_error
 
-
-# ボタンクリック関連の関数------------------------------------------------------------
-    # フォーム操作関連の関数------------------------------------------------------------
-    # 別のフォームを開くときgwinlock.flg=1にして前のフォームの操作をできなくする関数
-
-    # def formlock_on():
-    #     gformlock.flg = 1
-    # # ×で閉じたときgwinlock.flg=0にする関数(form=閉じるフォーム)
-
-    # def formlock_off(form):
-    #     gformlock.flg = 0
-    #     form.destroy()
     # ----------------------------------------------------------------------------------
     # パスワード設定ボタンを押したときの処理
 # パスワード
@@ -185,18 +173,6 @@ def setting():
             # メッセージを表示()
             label_time_error.configure(text="設定完了", text_color='blue')
             # messagebox.showinfo('制限時間設定', '制限時間を設定しました')
-# 再起動
-
-    def app_restart_click():
-        print("再起動")
-
-        # if gformlock.flg == 0:
-        #     grestart_flg.flg = 1
-        # # print("thread_time_startを終了しました")
-        # time_stop_click()
-        # print("タイマーを止めました")
-        # setting_form.quit()
-        # print("設定のウインドウを閉じました")
 
     # ウインドウの×を押したときの処理（タイマーを止めてからウインドウを閉じる）
 
@@ -206,10 +182,6 @@ def setting():
 
 
 # ----------------------------------------------------------------------------------
-    # global setting_end_flg
-
-    # gsetting_thread_end.flg = 0
-
     f = open('limit.txt', 'r')
     f_limit = int(f.read())
     f.close()
@@ -312,10 +284,7 @@ def setting():
         label_realtime = ctk.CTkLabel(
             setting_form, text='現在の制限時間:%s分' % f_limit)
     label_realtime.grid(row=9, column=0, pady=12, padx=10, sticky='e')
-    # 再起動
-    # button_restart = ctk.CTkButton(
-    #     setting_form, text='適用して再起動', command=lambda: app_restart_click())
-    # button_restart.grid(row=11, column=0, pady=5, padx=5, sticky='e')
+
     # 経過時間
     limit_label = ctk.CTkLabel(setting_frame, text='残り時間')
     limit_label.grid(row=11, column=0, pady=12, padx=10, sticky='w')
@@ -324,16 +293,6 @@ def setting():
         setting_form, text='アプリを終了', command=lambda: setting_end(), fg_color='red', text_color='black')
     # button_exit = ctk.CTkButton(setting_form, text='アプリを終了', command=lambda:setting_end(),fg_color='red')
     button_exit.grid(row=12, column=0, pady=6, padx=5, sticky='e')
-
-    # # 配置配置配置配置配置配置配置配置配置配置配置配置配置配置配置配置
-    # # パスワード設定ラベル
-    # # 再起動ボタン
-    # app_restart_btn = tk.Button(
-    #     setting_frame, text='アプリを再起動', command=lambda: app_restart_click())
-    # # 終了ボタン
-    # app_end_btn = tk.Button(setting_frame, text='アプリを終了',
-    #                         command=lambda: setting_end())
-
 
 # ----------------------------------------------------------------
     # 1秒ごとに更新
