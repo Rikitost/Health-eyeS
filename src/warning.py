@@ -13,13 +13,17 @@ import warning_flg as warn
 import time_limit as limit
 
 
-# formの設定等
+# 注意画面の設定等
 def rootwin():
-    # formの表示関数
+    # 注意画面の表示関数
     def toggle_visibility_on():
         # ウィンドウの透明度を設定 (0: 完全透明, 1: 完全不透明)
         root.attributes("-alpha", 0.97)
-        warning_label.config(text="近いです!!画面から離れてください!!")
+        # 時間切れだった場合
+        if limit.flg == 1:
+            warning_label.config(text="時間切れです!!")
+        else:
+            warning_label.config(text="近いです!!画面から離れてください!!")
 # 非表示---------------------------------------------------------------------------------------------------------------------
 
     def toggle_visibility_off():
