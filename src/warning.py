@@ -19,22 +19,22 @@ def rootwin():
     def toggle_visibility_on():
         # ウィンドウの透明度を設定 (0: 完全透明, 1: 完全不透明)
         root.attributes("-alpha", 0.97)
+        warning_label.config(text="近いです!!画面から離れてください!!")
 # 非表示---------------------------------------------------------------------------------------------------------------------
 
     def toggle_visibility_off():
+        warning_label.config(text="")
         # ウィンドウの透明度を設定 (0: 完全透明, 1: 完全不透明)
         root.attributes("-alpha", 0.0)
         root.attributes("-transparent", "white")
     # ----------------------------------------------------------------------------------
 
     # global root
+    # global warning_label
     # form
     root = tk.Tk()
     root.title("注意画面")
 
-    # # 喚起のラベル
-    # label = tk.Label(root, text="近いです!!画面から離れてください!!")
-    # label.grid(row=0, column=0, padx=10, pady=10)  # 行0、列0に配置し、パディングを設定
     # ウィンドウの初期設定
     # ウィンドウの表示
     root.deiconify()
@@ -52,6 +52,9 @@ def rootwin():
     root.bind("<B1-Motion>", lambda event: "break")
     root.bind("<Configure>", lambda event: "break")
 
+    # # 喚起のラベル
+    warning_label = tk.Label(root, text="")
+    warning_label.grid(row=0, column=0, padx=10, pady=10)  # 行0、列0に配置し、パディングを設定
     # 初期設定のためのoff
     toggle_visibility_off()
 
