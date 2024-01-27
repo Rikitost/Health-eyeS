@@ -43,7 +43,8 @@ def rootwin():
     # root.geometry("{0}x{1}+0+0".format(3000, 3000))
     # ウィンドウの初期設定
     # 画面全体
-    root.attributes("-fullscreen", True)
+    root.state('zoomed')
+    # root.attributes("-fullscreen", True)
     # タスクバー
     root.overrideredirect(True)
     # 最前面
@@ -65,7 +66,7 @@ def rootwin():
             root.quit()
             # root.destroy()
         else:
-            # 注意画面の判定(時間切れと近い時)
+            # 注意画面の判定(近い時と時間切れ)
             if warn.flg == 1 or limit.flg == 1:
                 # 注意画面のon
                 toggle_visibility_on()

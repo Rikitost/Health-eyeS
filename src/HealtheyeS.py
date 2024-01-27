@@ -236,10 +236,10 @@ limit.flg = 0
 thread_warning = threading.Thread(target=warning.rootwin)
 thread_warning.start()
 
-# # カメラ,ラムダ式を使用して HealtheyeS 関数を呼び出す
-# thread_camera = threading.Thread(target=HealtheyeS, args=(mode_cnt, fw_count, ew_count, fw,
-#                                                           ew, dis_Ans, text_Change, fx, fy, ex, ey, SAMPLE_LEN, FW_SAMPLE, EW_SAMPLE, MODECOUNT))
-# thread_camera.start()
+# カメラ,ラムダ式を使用して HealtheyeS 関数を呼び出す
+thread_camera = threading.Thread(target=HealtheyeS, args=(mode_cnt, fw_count, ew_count, fw,
+                                                          ew, dis_Ans, text_Change, fx, fy, ex, ey, SAMPLE_LEN, FW_SAMPLE, EW_SAMPLE, MODECOUNT))
+thread_camera.start()
 
 # 設定画面のスレッド
 thread_setting = threading.Thread(target=setting.setting)
@@ -259,7 +259,7 @@ while True:
         cv2.destroyAllWindows()
         print("カメラが終了しました")
         # カメラスレッド
-        # thread_camera.join()
+        thread_camera.join()
         print("カメラのスレッド終了")
         # 注意画面のスレッド
         thread_warning.join()

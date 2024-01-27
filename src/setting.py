@@ -143,6 +143,8 @@ def setting():
 
         label_newpassword_error.configure(
             text="パスワードを設定しました", text_color='blue')
+        # パスワード入力後に入力されてたものの削除(テキストボックス)
+        password_entry.delete(0, ctk.END)
         # 空白なら警告
         # if password == '':
         #     # メッセージを表示
@@ -164,7 +166,7 @@ def setting():
             label_time_error.configure(text="設定してください", text_color='red')
             # messagebox.showinfo('制限時間設定', '制限時間を設定してください(分)')
             # limit_winを最前面へ
-            setting_form.lift()
+            # setting_form.lift()
             return
         else:
             # 分
@@ -177,10 +179,12 @@ def setting():
             f.close()
             # ラベルの更新
             nokoritime = int(limit_minut)
-            # 現在設定されている制限時間
-            label_realtime.configure(text='残り時間:%d分' % int(limit_minut))
-            # メッセージを表示()
+            # 現在設定されている制限時間の更新
+            label_realtime.configure(text='現在の制限時間:%d分' % int(limit_minut))
+            # メッセージを表示
             label_time_error.configure(text="設定完了", text_color='blue')
+            # 時間入力後に入力されてたものの削除(テキストボックス)
+            limit_entry.delete(0, ctk.END)
             # messagebox.showinfo('制限時間設定', '制限時間を設定しました')
 
     # ウインドウの×を押したときの処理（タイマーを止めてからウインドウを閉じる）
