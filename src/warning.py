@@ -60,7 +60,7 @@ def rootwin():
         if gend.flg == 1:
             toggle_visibility_off()
             root.quit()
-            root.destroy()
+            # root.destroy()
         else:
             # 注意画面の判定(時間切れと近い時)
             if warn.flg == 1 or limit.flg == 1:
