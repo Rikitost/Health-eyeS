@@ -59,7 +59,6 @@ def setting_end():
             # passform.flg = 1
             # パスワードのformを開く
             password_input.passbox_tk()
-
         # print(gpass_sec.flg)
         # パスワードが解かれた
             if gpass_sec.flg == 1:
@@ -295,8 +294,9 @@ def setting():
     button_exit.grid(row=12, column=0, pady=6, padx=5, sticky='e')
 
 # ----------------------------------------------------------------
+    label_update()
     # 1秒ごとに更新
-    setting_form.after(1000, label_update)
+    # setting_form.after(1000, label_update)
 
     setting_form.mainloop()
 

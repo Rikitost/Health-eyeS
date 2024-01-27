@@ -53,8 +53,9 @@ def pass_open():
                 if int(input_pass) == password:
                     gpass_sec.flg = 1
                     # HealtheyeS.toggle_visibility_off()
+                    # 閉じる,なぜかdestroyを消すとうまくいった？
                     passbox_form.quit()
-                    passbox_form.destroy()
+                    # passbox_form.destroy()
                     print("パスワードが一致しました")
 
                     # passbox_form.destroy()
