@@ -37,7 +37,7 @@ def setting_end():
         # print("パスワードフラグ：%d" % gpass_sec.flg)
         # formの削除
         setting_form.quit()
-        setting_form.destroy()
+        # setting_form.destroy()
         gend.flg = 1  # 終了フラグを立てる
         print("設定なしのウインドウを閉じました")
         # print("setting endflg:%d" % gend.flg)
@@ -66,7 +66,7 @@ def setting_end():
                 # print("thread_time_startを閉じました")
                 # print("おわりフラグ：%d" % gend.flg)
                 setting_form.quit()
-                setting_form.destroy()
+                # setting_form.destroy()
                 gend.flg = 1  # 終了フラグを立てる
                 print("設定ありのウインドウを閉じました")
                 # gsetting_thread_end.flg = 1
