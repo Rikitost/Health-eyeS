@@ -1,7 +1,8 @@
 import customtkinter as ctk
 import tkinter as tk
 from tkinter import ttk
-from tkinter import messagebox
+# from tkinter import messagebox
+from plyer import notification
 
 # ファイルをインポート
 import password_input
@@ -93,9 +94,19 @@ def label_update():
             setting_end()
         # nokoritime = 0
     else:
-        # # 残り時間の通知
-        # if nokoritime == 5:
-        #     messagebox.showinfo("時間の通知です", "残り5分です")
+        # 残り時間の通知
+        if nokoritime == 5:
+            # 通知の設定
+            title = '時間の通知'
+            message = '残り5分です'
+
+            # 通知の表示
+            notification.notify(
+                title=title,
+                message=message,
+                app_icon='favicon.ico',  # アイコンのパス
+                timeout=10,  # 通知が表示される時間（秒）
+            )
         # カウントダウン
         nokoritime -= 1
         limit_label.configure(text='残り時間:%d' % nokoritime)
