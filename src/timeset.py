@@ -1,9 +1,3 @@
-# tkinterのimport
-import tkinter as tk
-# グローバル変数をセット
-import time_limit_value as glimit
-
-
 # 入力内容確認の関数
 def value_check(entry_text, warning_label):
     # 数字の判定

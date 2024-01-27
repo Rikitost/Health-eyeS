@@ -36,9 +36,7 @@ def rootwin():
         # root.attributes("-transparent", "white")
     # ----------------------------------------------------------------------------------
 
-    # global root
-    # global warning_label
-    # form
+    # 注意画面の生成
     root = tk.Tk()
     root.title("注意画面")
 

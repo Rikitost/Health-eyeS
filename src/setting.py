@@ -24,9 +24,6 @@ def setting_end():
     global pass_form
     global setting_form
     print("終了")
-    # global gend
-    # global gpass_windowup
-    # if gformlock.flg == 0:
     # パスワードを再取得
     fp = open('password.txt', 'r')
     f_password = fp.read()
@@ -40,13 +37,7 @@ def setting_end():
         # setting_form.destroy()
         gend.flg = 1  # 終了フラグを立てる
         print("設定なしのウインドウを閉じました")
-        # print("setting endflg:%d" % gend.flg)
-        # thread_time_start.join()
-        # print("thread_time_startを閉じました")
-
-    #         # setting_form.destroy()
     else:
-        # print(gpass_sec.flg)
         # pass入力のformがすでに開かれているかの判定
         if pass_form == 0:
             pass_form = 1
@@ -54,17 +45,10 @@ def setting_end():
             for widget in setting_form.winfo_children():
                 if isinstance(widget, ctk.CTkButton):
                     widget.configure(state=tk.DISABLED)
-            # setting_form.configure(state=ctk.DISABLED)
-            # パスワード入力画面が出たときに注意画面より上に表示させるため
-            # passform.flg = 1
             # パスワードのformを開く
             password_input.passbox_tk()
-        # print(gpass_sec.flg)
         # パスワードが解かれた
             if gpass_sec.flg == 1:
-                # thread_time_start.join()
-                # print("thread_time_startを閉じました")
-                # print("おわりフラグ：%d" % gend.flg)
                 setting_form.quit()
                 # setting_form.destroy()
                 gend.flg = 1  # 終了フラグを立てる
@@ -73,10 +57,9 @@ def setting_end():
             else:
                 print("解除できていないようだ")
 
-    # setting_form.destroy()
-
-
 # 表示ラベル1秒ごとに更新されていく
+
+
 def label_update():
     global limit_label
     global nokoritime
@@ -145,13 +128,7 @@ def setting():
             text="パスワードを設定しました", text_color='blue')
         # パスワード入力後に入力されてたものの削除(テキストボックス)
         password_entry.delete(0, ctk.END)
-        # 空白なら警告
-        # if password == '':
-        #     # メッセージを表示
-        #     messagebox.showinfo('パスワード設定', 'パスワードなしで設定しました')
-        # else:
-        #     # メッセージを表示
-        #     messagebox.showinfo('パスワード設定', 'パスワードを設定しました')
+
 # 時間
 
     def limit_dicide_click():
@@ -164,9 +141,6 @@ def setting():
         # 空白なら警告
         if limit == '':
             label_time_error.configure(text="設定してください", text_color='red')
-            # messagebox.showinfo('制限時間設定', '制限時間を設定してください(分)')
-            # limit_winを最前面へ
-            # setting_form.lift()
             return
         else:
             # 分
@@ -308,9 +282,8 @@ def setting():
     button_exit.grid(row=12, column=0, pady=6, padx=5, sticky='e')
 
 # ----------------------------------------------------------------
+# ラベルに飛ばす
     label_update()
-    # 1秒ごとに更新
-    # setting_form.after(1000, label_update)
 
     setting_form.mainloop()
 

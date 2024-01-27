@@ -28,8 +28,6 @@ def passbox_end():
 
 def pass_open():
     global gpass_sec
-
-    # timeset.value_check(passset_text, warning_pass_label)
     # 数値の入力方式が正しいか判定
     if timeset.value_check(passset_text, warning_pass_label) == True:
         # 入力されたパスワードを取得(int変換)
@@ -52,13 +50,9 @@ def pass_open():
                 # パスワードが一致したら終了
                 if int(input_pass) == password:
                     gpass_sec.flg = 1
-                    # HealtheyeS.toggle_visibility_off()
-                    # 閉じる,なぜかdestroyを消すとうまくいった？
+                    # 閉じる
                     passbox_form.quit()
-                    # passbox_form.destroy()
                     print("パスワードが一致しました")
-
-                    # passbox_form.destroy()
                 else:
                     warning_pass_label.configure(text='パスワードが違います')
 
