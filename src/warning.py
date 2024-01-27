@@ -3,6 +3,7 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
 import time
+import password_input
 
 # ファイルをインポート
 # グローバル変数
@@ -22,6 +23,8 @@ def rootwin():
         # 時間切れだった場合
         if limit.flg == 1:
             warning_label.config(text="時間切れです!!")
+            # 常に最前面に表示
+            password_input.passbox_form.attributes("-topmost", True)
         else:
             warning_label.config(text="近いです!!画面から離れてください!!")
 # 非表示---------------------------------------------------------------------------------------------------------------------
