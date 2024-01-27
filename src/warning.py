@@ -30,7 +30,7 @@ def rootwin():
         warning_label.config(text="")
         # ウィンドウの透明度を設定 (0: 完全透明, 1: 完全不透明)
         root.attributes("-alpha", 0.0)
-        root.attributes("-transparent", "white")
+        # root.attributes("-transparent", "white")
     # ----------------------------------------------------------------------------------
 
     # global root
@@ -58,8 +58,10 @@ def rootwin():
     root.bind("<Configure>", lambda event: "break")
 
     # # 喚起のラベル
-    warning_label = tk.Label(root, text="")
-    warning_label.grid(row=0, column=0, padx=10, pady=10)  # 行0、列0に配置し、パディングを設定
+    warning_label = tk.Label(root, text="", font=50)
+    warning_label.pack()
+    # warning_label.grid(row=5, column=5, padx=20, pady=10)  # 行0、列0に配置し、パディングを設定
+
     # 初期設定のためのoff
     toggle_visibility_off()
 
