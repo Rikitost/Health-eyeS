@@ -14,8 +14,9 @@ else:
     base = None
 
 build_exe_options = {
-    "packages": ["data"],  # 依存するパッケージを指定
-    "include_files": ["data/", "clock_thread_end_flg.py", "end_flg_value.py", "form_lock_flg.py", "limit.txt", "pass_sec_value.py", "password_input.py", "password.txt", "restart_flg.py", "setting_thread_end_flg.py", "setting.py", "tempCodeRunnerFile.py", "time_count_flg.py", "time_count_value.py", "timeset.py"],  # 参照するフォルダやリソースを指定
+    "packages": ["data", "plyer"],  # 依存するパッケージを指定
+    # 参照するフォルダやリソースを指定
+    "include_files": ["data/", "end_flg_value.py", "favicon.ico", "limit.txt", "pass_sec_value.py", "password_form_end_flg.py", "password_input.py", "password.txt",   "setting.py", "time_limit.py", "timeset.py", "warning_flg.py", "warning.py"],
     "include_msvcr": True,
     "silent": True,
 }
@@ -23,7 +24,7 @@ build_exe_options = {
 shortcut_common_setting = (
     "HEALTHEYESuper",
     "TARGETDIR",
-    "[TARGETDIR]HealtheyeS.exe",
+    "[TARGETDIR]Health-eyeS.exe",
     None,
     None,
     None,
@@ -43,12 +44,12 @@ msi_data = {"Shortcut": shortcut_table}
 bdist_msi_options = {
     'data': msi_data,
     # 任意の UUID を生成して設定
-    'upgrade_code': '{1144ECAD-395D-4946-9B44-9D69DE2D4603}',
+    'upgrade_code': '{1DE2105C-063C-4766-9BA6-20FBB473D7A6}',
 }
 
 setup(
     name="Health-eyeS",
-    version="1.6.3",
+    version="2.1.1",
     description="Health-eyeS",
     options={"build_exe": build_exe_options, "bdist_msi": bdist_msi_options},
     executables=[Executable("HealtheyeS.py",  base=base,
