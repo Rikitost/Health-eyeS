@@ -249,9 +249,12 @@ thread_setting.start()
 print("設定の立ち上げ")
 
 while True:
-    time.sleep(2)
+    # pythonは重いのでsleepを入れる
+    time.sleep(1)
     # 全ての終了処理
     if gend.flg == 1:
+        # 周りのスレッドが終わる時間ぐらい
+        time.sleep(3)
         # カメラの開放
         cap.release()
         # cvのデストロイ

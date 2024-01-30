@@ -80,7 +80,7 @@ def label_update():
         # nokoritime = 0
     else:
         # 残り時間の通知
-        if nokoritime == 5:
+        if nokoritime == 300:
             # 通知の設定
             title = '時間の通知'
             message = '残り5分です'
