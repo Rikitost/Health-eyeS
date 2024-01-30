@@ -24,7 +24,7 @@ build_exe_options = {
 shortcut_common_setting = (
     "HEALTHEYESuper",
     "TARGETDIR",
-    "[TARGETDIR]Heltheye.exe",
+    "[TARGETDIR]HealtheyeS.exe",
     "path/to/favicon.ico",
     None,
     None,
@@ -50,7 +50,7 @@ bdist_msi_options = {
 
 setup(
     name="Health-eyeS",
-    version="2.1.4",
+    version="2.1.5",
     description="Health-eyeS",
     options={"build_exe": build_exe_options, "bdist_msi": bdist_msi_options},
     executables=[Executable("HealtheyeS.py",  base=base,
