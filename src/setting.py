@@ -68,6 +68,9 @@ def label_update():
     # 経過時間ラベルの更新
     # limitlablがないときの例外処理
     if nokoritime <= 0:
+        h = 0
+        m = 0
+        s = 0
         # 時間制限で注意画面の表示フラグを立てる
         limit.flg = 1
         # パスワードformの開いているか
@@ -91,7 +94,11 @@ def label_update():
             )
         # カウントダウン
         nokoritime -= 1
-        limit_label.configure(text='残り時間:%d' % nokoritime)
+        # 時間
+        h = nokoritime // 3600
+        m = (nokoritime % 3600) // 60
+        s = nokoritime % 60
+        limit_label.configure(text='残り時間:{:02}:{:02}:{:02}'.format(h, m, s))
         # afterで1秒ごとのカウントダウン
         setting_form.after(1000, label_update)
 
@@ -139,14 +146,14 @@ def setting():
         # 入力した制限時間を取得
         limit = limit_entry.get()
         # 空白なら警告
-        if limit == '':
+        if limit == '' or int(limit) == 0:
             label_time_error.configure(text="設定してください", text_color='red')
             return
         else:
             # 分
-            # limit_minut = int(limit) * 60
+            limit_minut = int(limit) * 60
             # 秒
-            limit_minut = int(limit)
+            # limit_minut = int(limit)
             # 制限時間をlimit.txtに保存
             f = open('limit.txt', 'w')
             f.write(str(limit_minut))
@@ -154,7 +161,8 @@ def setting():
             # ラベルの更新
             nokoritime = int(limit_minut)
             # 現在設定されている制限時間の更新
-            label_realtime.configure(text='現在の制限時間:%d分' % int(limit_minut))
+            label_realtime.configure(text='現在の制限時間:%d分' %
+                                     (int(limit_minut) / 60))
             # メッセージを表示
             label_time_error.configure(text="設定完了", text_color='blue')
             # 時間入力後に入力されてたものの削除(テキストボックス)
@@ -269,7 +277,7 @@ def setting():
         label_realtime = ctk.CTkLabel(setting_form, text='制限時間を設定していません')
     else:
         label_realtime = ctk.CTkLabel(
-            setting_form, text='現在の制限時間:%s分' % f_limit)
+            setting_form, text='現在の制限時間:%s分' % (f_limit / 60))
     label_realtime.grid(row=9, column=0, pady=12, padx=10, sticky='e')
 
     # 経過時間

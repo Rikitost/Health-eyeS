@@ -25,7 +25,7 @@ shortcut_common_setting = (
     "HEALTHEYESuper",
     "TARGETDIR",
     "[TARGETDIR]HealtheyeS.exe",
-    "path/to/favicon.ico",
+    "favicon.ico",
     None,
     None,
     None,
