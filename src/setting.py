@@ -277,7 +277,7 @@ def setting():
         label_realtime = ctk.CTkLabel(setting_form, text='制限時間を設定していません')
     else:
         label_realtime = ctk.CTkLabel(
-            setting_form, text='現在の制限時間:%s分' % (f_limit / 60))
+            setting_form, text='現在の制限時間:%s分' % (int(f_limit) / 60))
     label_realtime.grid(row=9, column=0, pady=12, padx=10, sticky='e')
 
     # 経過時間

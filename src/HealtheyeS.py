@@ -250,7 +250,7 @@ print("設定の立ち上げ")
 
 while True:
     # pythonは重いのでsleepを入れる
-    time.sleep(1)
+    time.sleep(3)
     # 全ての終了処理
     if gend.flg == 1:
         # 周りのスレッドが終わる時間ぐらい
