@@ -111,74 +111,71 @@ def distance(sample_Len, fw_Sample, ew_Sample, fw, ew):
 
 
 def HealtheyeS(mode_cnt, fw_count, ew_count, fw, ew, dis_Ans, textChange, fx, fy, ex, ey, sampleLen, fwSample, ewSample, MODE):
-    # 0.1秒間ごとに処理をする
-    time.sleep(0.1)
-    # count += 1
-    ret, frame = cap.read()
+    # 終了フラグ
+    while gend.flg != 1:
+        # 0.1秒間ごとに処理をする
+        time.sleep(0.05)
+        # count += 1
+        ret, frame = cap.read()
 
-    # カラーをモノクロ化したキャプチャを代入(グレースケール化)
-    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        # カラーをモノクロ化したキャプチャを代入(グレースケール化)
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
-    # 顔の検出
-    faces = face_cascade.detectMultiScale(
-        gray, scaleFactor=1.3, minNeighbors=5)
+        # 顔の検出
+        faces = face_cascade.detectMultiScale(
+            gray, scaleFactor=1.3, minNeighbors=5)
 
-    # 目の検出
-    eyes = eye_cascade.detectMultiScale(
-        gray, scaleFactor=1.3, minNeighbors=5)
+        # 目の検出
+        eyes = eye_cascade.detectMultiScale(
+            gray, scaleFactor=1.3, minNeighbors=5)
 
-# デバック-------------------------------------------------
-    # # 第1引数   効果を適応する画像
-    # # 第2引数   矩形の左上隅の座標
-    # # 第3引数   矩形の右下隅の座標
-    # # 第4引数   矩形の色
-    # # 第5引数   描画する線の太さ（-1以下だと塗りつぶし）
-    # 顔に四角形(矩形)を描画する
-    for (fx, fy, fw, fh) in faces:
-        cv2.rectangle(frame, (fx, fy), (fx + fw, fy + fh),
-                      FRAME_RGB_G, FRAME_LINESIZE)
+    # デバック-------------------------------------------------
+        # # 第1引数   効果を適応する画像
+        # # 第2引数   矩形の左上隅の座標
+        # # 第3引数   矩形の右下隅の座標
+        # # 第4引数   矩形の色
+        # # 第5引数   描画する線の太さ（-1以下だと塗りつぶし）
+        # 顔に四角形(矩形)を描画する
+        for (fx, fy, fw, fh) in faces:
+            cv2.rectangle(frame, (fx, fy), (fx + fw, fy + fh),
+                          FRAME_RGB_G, FRAME_LINESIZE)
 
-    # 目に四角形(矩形)を描画する
-    for (ex, ey, ew, eh) in eyes:
-        cv2.rectangle(frame, (ex, ey), (ex + ew, ey + eh),
-                      FRAME_RGB_B, FRAME_LINESIZE)
-# -----------------------------------------------------------
-# フレームごとに配列に代入回数に満たすと距離を測る
-    if mode_cnt < MODE:
-        fw_count.insert(mode_cnt, fw)
-        ew_count.insert(mode_cnt, ew)
-        mode_cnt += 1
-    else:
-        mode_cnt = 0
-        dis_Ans = distance(sampleLen, fwSample, ewSample,
-                           statistics.mode(fw_count), statistics.mode(ew_count))
-        # 距離によって表示を変える
-        if dis_Ans == -1:
-            # ぼかしの処理
-            warn.flg = 1
-            MODE = 20
-        elif dis_Ans == -2:
-            # ぼかしの処理
-            warn.flg = 0
-            MODE = 50
+        # 目に四角形(矩形)を描画する
+        for (ex, ey, ew, eh) in eyes:
+            cv2.rectangle(frame, (ex, ey), (ex + ew, ey + eh),
+                          FRAME_RGB_B, FRAME_LINESIZE)
+    # -----------------------------------------------------------
+    # フレームごとに配列に代入回数に満たすと距離を測る
+        if mode_cnt < MODE:
+            fw_count.insert(mode_cnt, fw)
+            ew_count.insert(mode_cnt, ew)
+            mode_cnt += 1
         else:
-            if dis_Ans < 30:
+            mode_cnt = 0
+            dis_Ans = distance(sampleLen, fwSample, ewSample,
+                               statistics.mode(fw_count), statistics.mode(ew_count))
+            # 距離によって表示を変える
+            if dis_Ans == -1:
                 # ぼかしの処理
                 warn.flg = 1
                 MODE = 20
-            elif dis_Ans >= 30:
+            elif dis_Ans == -2:
+                # ぼかしの処理
                 warn.flg = 0
                 MODE = 50
+            else:
+                if dis_Ans < 30:
+                    # ぼかしの処理
+                    warn.flg = 1
+                    MODE = 20
+                elif dis_Ans >= 30:
+                    warn.flg = 0
+                    MODE = 50
             print('%.2fcm\n' % dis_Ans)    # 小数第２位まで出力
 
-    # カウントのリセット
-        fw_count = []
-        ew_count = []
-
-    # 終了フラグ
-    if gend.flg != 1:
-        HealtheyeS(mode_cnt, fw_count, ew_count, fw, ew, dis_Ans,
-                   textChange, fx, fy, ex, ey, sampleLen, fwSample, ewSample, MODE)
+        # カウントのリセット
+            fw_count = []
+            ew_count = []
 
 
 # アプリケーションの実行部分---------------------------------------------------------------------------------------------
@@ -236,21 +233,23 @@ limit.flg = 0
 thread_warning = threading.Thread(target=warning.rootwin)
 thread_warning.start()
 
+print("注意画面の立ち上げ")
+
 # カメラ,ラムダ式を使用して HealtheyeS 関数を呼び出す
 thread_camera = threading.Thread(target=HealtheyeS, args=(mode_cnt, fw_count, ew_count, fw,
                                                           ew, dis_Ans, text_Change, fx, fy, ex, ey, SAMPLE_LEN, FW_SAMPLE, EW_SAMPLE, MODECOUNT))
 thread_camera.start()
 
+print("カメラの処理")
+
 # 設定画面のスレッド
 thread_setting = threading.Thread(target=setting.setting)
 thread_setting.start()
 
-
-print("カメラを起動中…")
-
+print("設定の立ち上げ")
 
 while True:
-    time.sleep(1)
+    time.sleep(2)
     # 全ての終了処理
     if gend.flg == 1:
         # カメラの開放
@@ -258,12 +257,12 @@ while True:
         # cvのデストロイ
         cv2.destroyAllWindows()
         print("カメラが終了しました")
-        # カメラスレッド
-        thread_camera.join()
-        print("カメラのスレッド終了")
         # 注意画面のスレッド
         thread_warning.join()
         print("画面のスレッド終了")
+        # カメラスレッド
+        thread_camera.join()
+        print("カメラのスレッド終了")
         # 設定のスレッド
         thread_setting.join()
         print("設定のスレッド")

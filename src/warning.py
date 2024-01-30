@@ -18,6 +18,7 @@ import time_limit as limit
 def rootwin():
     # 注意画面の表示関数
     def toggle_visibility_on():
+        print("出す")
         # ウィンドウの透明度を設定 (0: 完全透明, 1: 完全不透明)
         root.attributes("-alpha", 0.97)
         # 時間切れだった場合
@@ -30,7 +31,8 @@ def rootwin():
 # 非表示---------------------------------------------------------------------------------------------------------------------
 
     def toggle_visibility_off():
-        warning_label.config(text="")
+        print("隠す")
+        warning_label.config(text="とおい")
         # ウィンドウの透明度を設定 (0: 完全透明, 1: 完全不透明)
         root.attributes("-alpha", 0.0)
         # root.attributes("-transparent", "white")
@@ -44,6 +46,7 @@ def rootwin():
     # ウィンドウの表示
     root.deiconify()
     # ウィンドウを透明クリック可能にする
+    root.attributes("-alpha", 0.0)
     root.wm_attributes("-transparentcolor", "white")
     # root.geometry("{0}x{1}+0+0".format(3000, 3000))
     # ウィンドウの初期設定
@@ -58,7 +61,7 @@ def rootwin():
     root.bind("<B1-Motion>", lambda event: "break")
     root.bind("<Configure>", lambda event: "break")
 
-    # # 喚起のラベル
+    # 喚起のラベル
     warning_label = tk.Label(root, text="", font=50)
     warning_label.pack()
     # warning_label.grid(row=5, column=5, padx=20, pady=10)  # 行0、列0に配置し、パディングを設定
@@ -83,7 +86,7 @@ def rootwin():
             # 1秒ごとに監視いたします
             root.after(1000, warning)
 
-    root.after(100, warning)
+    root.after(1000, warning)
 
     root.mainloop()
 
