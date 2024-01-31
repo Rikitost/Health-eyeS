@@ -62,8 +62,8 @@ def rootwin():
     root.bind("<Configure>", lambda event: "break")
 
     # 喚起のラベル
-    warning_label = tk.Label(root, text="", font=50)
-    warning_label.pack()
+    warning_label = tk.Label(root, text="", font=("MSゴシック", 50))
+    warning_label.pack(pady=100)
     # warning_label.grid(row=5, column=5, padx=20, pady=10)  # 行0、列0に配置し、パディングを設定
 
     # 初期設定のためのoff
