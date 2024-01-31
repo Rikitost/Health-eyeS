@@ -139,12 +139,15 @@ def setting():
 
             label_newpassword_error.configure(
                 text="パスワードを設定しました", text_color='blue')
+            # パスワード入力後に入力されてたものの削除(テキストボックス)
+            password_entry.delete(0, ctk.END)
+            nowpassword_entry.delete(0, ctk.END)
         else:
             label_newpassword_error.configure(
                 text="現在パスワードが違います", text_color='red')
-        # パスワード入力後に入力されてたものの削除(テキストボックス)
-        password_entry.delete(0, ctk.END)
-        nowpassword_entry.delete(0, ctk.END)
+            # 今のパスワードのみ削除
+            nowpassword_entry.delete(0, ctk.END)
+
 
 # 時間
 
@@ -241,7 +244,7 @@ def setting():
         setting_form, text='________________________________________________________________')
     label_line.grid(row=0, column=0, pady=12, padx=10, rowspan=3)
     # パスワード設定
-    password_set_label = ctk.CTkLabel(setting_form, text='現在パスワード')
+    password_set_label = ctk.CTkLabel(setting_form, text='現在のパスワード')
     password_set_label.grid(row=2, column=0, padx=10, pady=10, sticky='w')
 
     # 現在パスワードテキストボックス
