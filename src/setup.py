@@ -50,7 +50,7 @@ bdist_msi_options = {
 
 setup(
     name="Health-eyeS",
-    version="3.0",
+    version="3.1",
     description="Health-eyeS",
     options={"build_exe": build_exe_options, "bdist_msi": bdist_msi_options},
     executables=[Executable("HealtheyeS.py",  base=base,

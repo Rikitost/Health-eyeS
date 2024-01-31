@@ -76,7 +76,7 @@ def passbox_tk():
 
     passbox_form = ctk.CTk()
     passbox_form.geometry("350x250")
-    passbox_form.title("パスワード入力")
+    passbox_form.title("パスワード入力画面")
     # 常に最前面に表示
     passbox_form.attributes("-topmost", True)
 
@@ -86,7 +86,8 @@ def passbox_tk():
     passbox_frame = ctk.CTkFrame(master=passbox_form)
     passbox_frame.pack(pady=20, padx=40, fill='both', expand=True)
     # フォームのパスワード設定ラベル
-    pass_label = ctk.CTkLabel(master=passbox_frame, text='パスワードを入力してください')
+    pass_label = ctk.CTkLabel(master=passbox_frame,
+                              text='パスワードを入力してください(半角数字4桁)')
     pass_label.pack(pady=12, padx=10)
     # 入力の制限
     validation_pass = passbox_form.register(timeset.on_validate_pass)
@@ -101,7 +102,7 @@ def passbox_tk():
     # 決定のボタン
     timeset_button = ctk.CTkButton(
         passbox_frame,
-        text='決定',
+        text='確定',
         command=lambda: pass_open()
     )
     timeset_button.pack(pady=12, padx=10)
