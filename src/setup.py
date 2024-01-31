@@ -45,12 +45,12 @@ msi_data = {"Shortcut": shortcut_table}
 bdist_msi_options = {
     'data': msi_data,
     # 任意の UUID を生成して設定
-    'upgrade_code': '{CD11FF6B-AE51-4E5F-B8A2-B7A301105530}',
+    'upgrade_code': '{8FDF078D-1F2C-4536-8281-3336B5CB8BD7}',
 }
 
 setup(
     name="Health-eyeS",
-    version="2.1.5",
+    version="3.1",
     description="Health-eyeS",
     options={"build_exe": build_exe_options, "bdist_msi": bdist_msi_options},
     executables=[Executable("HealtheyeS.py",  base=base,

@@ -158,7 +158,7 @@ def HealtheyeS(mode_cnt, fw_count, ew_count, fw, ew, dis_Ans, textChange, fx, fy
             if dis_Ans == -1:
                 # ぼかしの処理
                 warn.flg = 1
-                MODE = 20
+                MODE = 10
             elif dis_Ans == -2:
                 # ぼかしの処理
                 warn.flg = 0
@@ -167,7 +167,7 @@ def HealtheyeS(mode_cnt, fw_count, ew_count, fw, ew, dis_Ans, textChange, fx, fy
                 if dis_Ans < 30:
                     # ぼかしの処理
                     warn.flg = 1
-                    MODE = 20
+                    MODE = 10
                 elif dis_Ans >= 30:
                     warn.flg = 0
                     MODE = 50
