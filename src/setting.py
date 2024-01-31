@@ -123,18 +123,28 @@ def setting():
 
     def pass_dicide_click():
         print("パスワード設定ボタンを押しました")
-        # パスワードを取得
-        password = password_entry.get()
-        print(password)
-        # パスワードをpassword.txtに保存
-        f = open('password.txt', 'w')
-        f.write(str(password))
+        # ファイルから現在のパスワードを取得
+        f = open('password.txt', 'r')
+        now_pass = f.read()
         f.close()
+        # 現在のパスワードと保存されているパスワードが同じなら新しく変更
+        if nowpassword_entry.get() == now_pass:
+            # パスワードを取得
+            password = password_entry.get()
+            print(password)
+            # パスワードをpassword.txtに保存
+            f = open('password.txt', 'w')
+            f.write(str(password))
+            f.close()
 
-        label_newpassword_error.configure(
-            text="パスワードを設定しました", text_color='blue')
+            label_newpassword_error.configure(
+                text="パスワードを設定しました", text_color='blue')
+        else:
+            label_newpassword_error.configure(
+                text="現在パスワードが違います", text_color='red')
         # パスワード入力後に入力されてたものの削除(テキストボックス)
         password_entry.delete(0, ctk.END)
+        nowpassword_entry.delete(0, ctk.END)
 
 # 時間
 
@@ -145,9 +155,18 @@ def setting():
         global label_time_error
         # 入力した制限時間を取得
         limit = limit_entry.get()
-        # 空白なら警告
+        # ファイルから現在のパスワードを取得
+        f = open('password.txt', 'r')
+        now_pass = f.read()
+        f.close()
+        # 空白か0分なら警告
         if limit == '' or int(limit) == 0:
             label_time_error.configure(text="設定してください", text_color='red')
+            return
+        # 現在のパスワードと入力されたパスワードが違う場合
+        elif nowpassword_entry.get() != now_pass:
+            # エラーのメッセージを表示
+            label_time_error.configure(text="現在パスワードが違います", text_color='red')
             return
         else:
             # 分
@@ -167,6 +186,7 @@ def setting():
             label_time_error.configure(text="設定完了", text_color='blue')
             # 時間入力後に入力されてたものの削除(テキストボックス)
             limit_entry.delete(0, ctk.END)
+            nowpassword_entry.delete(0, ctk.END)
             # messagebox.showinfo('制限時間設定', '制限時間を設定しました')
 
     # ウインドウの×を押したときの処理（タイマーを止めてからウインドウを閉じる）
@@ -206,6 +226,8 @@ def setting():
 
     # ×を押したときの処理
     setting_form.protocol("WM_DELETE_WINDOW", lambda: delete_window())
+    # 数字の判定
+    validation = setting_form.register(on_validate)
     # フレームの作成
     setting_frame = ctk.CTkFrame(setting_form)
     setting_frame.configure(width=200, height=50)
@@ -219,8 +241,13 @@ def setting():
         setting_form, text='________________________________________________________________')
     label_line.grid(row=0, column=0, pady=12, padx=10, rowspan=3)
     # パスワード設定
-    password_set_label = ctk.CTkLabel(setting_form, text='パスワード設定')
+    password_set_label = ctk.CTkLabel(setting_form, text='現在パスワード')
     password_set_label.grid(row=2, column=0, padx=10, pady=10, sticky='w')
+
+    # 現在パスワードテキストボックス
+    nowpassword_entry = ctk.CTkEntry(setting_form, placeholder_text="半角数字4桁", validate="key", validatecommand=(
+        validation, '%d', '%i', '%P', '%s', '%S', '%v', '%V', '%W'))
+    nowpassword_entry.grid(row=2, column=0, pady=8, padx=10)
     # 線
     label_line = ctk.CTkLabel(
         setting_form, text='________________________________________________________________')
@@ -228,9 +255,8 @@ def setting():
     # 新しいパスワード
     label_newpassword = ctk.CTkLabel(setting_form, text='新しいパスワード')
     label_newpassword.grid(row=3, column=0, padx=10, pady=10, sticky='w')
-    validation = setting_form.register(on_validate)
 
-    # パスワードの注意
+    # パスワードの注意ラベル
     label_newpassword_error = ctk.CTkLabel(
         setting_form, text='', text_color='red')
     label_newpassword_error.grid(row=4, column=0, padx=10, pady=10, sticky='w')
